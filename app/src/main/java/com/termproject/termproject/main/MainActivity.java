@@ -1,9 +1,11 @@
-package com.termproject.termproject;
+package com.termproject.termproject.main;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.termproject.termproject.R;
 
 public class MainActivity extends AppCompatActivity {
 

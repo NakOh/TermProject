@@ -1,4 +1,4 @@
-package com.termproject.termproject;
+package com.termproject.termproject.main;
 
 /**
  * Created by kk070 on 2015-12-02.

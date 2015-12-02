@@ -90,7 +90,7 @@ int TextLCDIoctl(int cmd, char *buf)
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_TextLCDOut( JNIEnv* env, jobject thiz, jstring data0, jstring data1 )
+Java_com_termproject_termproject_main_DeviceActivity_TextLCDOut( JNIEnv* env, jobject thiz, jstring data0, jstring data1 )
 {
     jboolean iscopy;
     char *buf0, *buf1;
@@ -111,7 +111,7 @@ Java_com_termproject_termproject_DeviceActivity_TextLCDOut( JNIEnv* env, jobject
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_IOCtlWriteByte( JNIEnv* env, jobject thiz,  jstring data )
+Java_com_termproject_termproject_main_DeviceActivity_IOCtlWriteByte( JNIEnv* env, jobject thiz,  jstring data )
 {
     jboolean iscopy;
     char *buf;
@@ -123,7 +123,7 @@ Java_com_termproject_termproject_DeviceActivity_IOCtlWriteByte( JNIEnv* env, job
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_IOCtlPos( JNIEnv* env, jobject thiz,  jint pos )
+Java_com_termproject_termproject_main_DeviceActivity_IOCtlPos( JNIEnv* env, jobject thiz,  jint pos )
 {
     initialize();
     strcommand.pos = pos;
@@ -131,21 +131,21 @@ Java_com_termproject_termproject_DeviceActivity_IOCtlPos( JNIEnv* env, jobject t
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_IOCtlClear( JNIEnv* env, jobject thiz )
+Java_com_termproject_termproject_main_DeviceActivity_IOCtlClear( JNIEnv* env, jobject thiz )
 {
     initialize();
     return TextLCDIoctl(TEXTLCD_CLEAR,NULL);
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_IOCtlReturnHome( JNIEnv* env, jobject thiz)
+Java_com_termproject_termproject_main_DeviceActivity_IOCtlReturnHome( JNIEnv* env, jobject thiz)
 {
     initialize();
     return TextLCDIoctl(TEXTLCD_RETURN_HOME,NULL);
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_IOCtlDisplay( JNIEnv* env, jobject thiz, jboolean bOn)
+Java_com_termproject_termproject_main_DeviceActivity_IOCtlDisplay( JNIEnv* env, jobject thiz, jboolean bOn)
 {
     initialize();
     if(bOn) {
@@ -156,7 +156,7 @@ Java_com_termproject_termproject_DeviceActivity_IOCtlDisplay( JNIEnv* env, jobje
     return TextLCDIoctl(TEXTLCD_DISPLAY_CONTROL,NULL);
 }
 jint
-Java_com_termproject_termproject_DeviceActivity_IOCtlCursor( JNIEnv* env, jobject thiz , jboolean bOn)
+Java_com_termproject_termproject_main_DeviceActivity_IOCtlCursor( JNIEnv* env, jobject thiz , jboolean bOn)
 {
     initialize();
     if(bOn) {
@@ -168,7 +168,7 @@ Java_com_termproject_termproject_DeviceActivity_IOCtlCursor( JNIEnv* env, jobjec
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_IOCtlBlink( JNIEnv* env, jobject thiz, jboolean bOn )
+Java_com_termproject_termproject_main_DeviceActivity_IOCtlBlink( JNIEnv* env, jobject thiz, jboolean bOn )
 {
     initialize();
     if(bOn) {
@@ -180,7 +180,7 @@ Java_com_termproject_termproject_DeviceActivity_IOCtlBlink( JNIEnv* env, jobject
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_SegmentControl (JNIEnv* env, jobject thiz, jint data )
+Java_com_termproject_termproject_main_DeviceActivity_SegmentControl (JNIEnv* env, jobject thiz, jint data )
 {
 
     int dev, ret ;
@@ -197,7 +197,7 @@ Java_com_termproject_termproject_DeviceActivity_SegmentControl (JNIEnv* env, job
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_SegmentIOControl (JNIEnv* env,  jobject thiz, jint data )
+Java_com_termproject_termproject_main_DeviceActivity_SegmentIOControl (JNIEnv* env,  jobject thiz, jint data )
 {
     int dev, ret ;
     dev = open("/dev/segment",O_RDWR | O_SYNC);
@@ -213,7 +213,7 @@ Java_com_termproject_termproject_DeviceActivity_SegmentIOControl (JNIEnv* env,  
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_LEDControl( JNIEnv* env,
+Java_com_termproject_termproject_main_DeviceActivity_LEDControl( JNIEnv* env,
                                                            jobject thiz, jint data )
 {
     int fd,ret;
@@ -232,7 +232,7 @@ Java_com_termproject_termproject_DeviceActivity_LEDControl( JNIEnv* env,
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_FLEDControl(JNIEnv* env, jobject thiz, jint led_num, jstring data)
+Java_com_termproject_termproject_main_DeviceActivity_FLEDControl(JNIEnv* env, jobject thiz, jint led_num, jstring data)
 {
     int fd, ret, len;
     const char *buf;
@@ -261,7 +261,7 @@ Java_com_termproject_termproject_DeviceActivity_FLEDControl(JNIEnv* env, jobject
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_DotMatrixControl(JNIEnv* env, jobject thiz, jstring data)
+Java_com_termproject_termproject_main_DeviceActivity_DotMatrixControl(JNIEnv* env, jobject thiz, jstring data)
 {
     const char *buf;
     int dev,ret, len;
@@ -280,7 +280,7 @@ Java_com_termproject_termproject_DeviceActivity_DotMatrixControl(JNIEnv* env, jo
 }
 
 jint
-Java_com_termproject_termproject_DeviceActivity_PiezoControl( JNIEnv* env,
+Java_com_termproject_termproject_main_DeviceActivity_PiezoControl( JNIEnv* env,
                                                    jobject thiz, jint value )
 {
     int fd,ret;

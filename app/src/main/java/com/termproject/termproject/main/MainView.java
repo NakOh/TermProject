@@ -203,6 +203,7 @@ public class MainView extends View {
                 if(tile[i][j].getX()+tile[i][j].getW() > currentX && tile[i][j].getX() < currentX && tile[i][j].getY() < currentY && tile[i][j].getY()+tile[i][j].getH() > currentY){
                     //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
                     //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.
+                    //여기에 로직 추가하면 됩니다.
                     tile[i][j].setIsShow(true);
                     GameManager.getInstance().setFindMine(GameManager.getInstance().getFindMine() + 1);
                 }

@@ -44,6 +44,7 @@ public class Tile {
     public void update(Canvas canvas, int x, int y){
         this.setX(x);
         this.setY(y);
+        //원래는 default 이미지가 보이다가 눌렸을 경우 자신의 BItmap을 보여줘야하는데, 작동을 하지 않아 일단 주석처리해둠
         //if(isShow) {
             canvas.drawBitmap(tileBitmap, x, y, null);
         //}else{

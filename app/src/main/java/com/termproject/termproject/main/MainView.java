@@ -30,6 +30,8 @@ public class MainView extends View {
         super(context);
         this.mContext = context;
         this.difficulty  = GameManager.getInstance().getDifficulty();
+        //여기서 difficulty 값만 바꿔주면 난이도가 바뀜
+        this.difficulty = 0;
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
         if(difficulty == 0) {
             makeTile(easy);
@@ -117,6 +119,7 @@ public class MainView extends View {
     }
 
     private void setMine(int index){
+        tile= new Tile[index][index];
         for (int i = 0; i < index; i++) {
             for(int j=0; j < index; j++){
                 tile[i][j] = new Tile(mContext);

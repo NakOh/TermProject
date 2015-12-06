@@ -10,12 +10,11 @@ import com.termproject.termproject.manager.GameManager;
 
 public class MainActivity extends Activity {
     private MainView view;
-    private GameManager gameManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //View를 직접 만들어 셋팅한다.
-        gameManager = new GameManager(0);
+        GameManager.getInstance();
         view = new MainView(this);
         setContentView(view);
     }

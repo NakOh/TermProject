@@ -44,11 +44,11 @@ public class Tile {
     public void update(Canvas canvas, int x, int y){
         this.setX(x);
         this.setY(y);
-        if(isShow) {
+        //if(isShow) {
             canvas.drawBitmap(tileBitmap, x, y, null);
-        }else{
-            canvas.drawBitmap(defaultTile, x, y, null);
-        }
+        //}else{
+         //   canvas.drawBitmap(defaultTile, x, y, null);
+       // }
     }
 
     public int getNumber() {

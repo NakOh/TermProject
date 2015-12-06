@@ -7,13 +7,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.termproject.termproject.R;
+import com.termproject.termproject.manager.GameManager;
 
 public class MainActivity extends Activity {
     private MainView view;
+    private GameManager gameManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //VIew를 직접 만들어 셋팅한다.
+        //View를 직접 만들어 셋팅한다.
+        gameManager = new GameManager(0);
         view = new MainView(this);
         setContentView(view);
     }

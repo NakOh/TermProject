@@ -1,5 +1,6 @@
 package com.termproject.termproject.main;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -7,13 +8,14 @@ import android.view.MenuItem;
 
 import com.termproject.termproject.R;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends Activity {
+    private MainView view;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-
+        //VIew를 직접 만들어 셋팅한다.
+        view = new MainView(this);
+        setContentView(view);
     }
 
     @Override
@@ -37,4 +39,15 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onPause(){ super.onPause();    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy(){ super.onDestroy();  }
 }

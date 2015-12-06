@@ -6,6 +6,7 @@ package com.termproject.termproject.manager;
 public class GameManager {
     private static GameManager instance;
     private int difficulty;
+    private int findMine;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -23,5 +24,13 @@ public class GameManager {
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public int getFindMine() {
+        return findMine;
+    }
+
+    public void setFindMine(int findMine) {
+        this.findMine = findMine;
     }
 }

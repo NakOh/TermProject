@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.termproject.termproject.R;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
 
@@ -21,7 +22,7 @@ public class MainView extends View {
     private final static int easy = 5 + mask;
     private final static int normal = 7 + mask;
     private final static int hard = 10 + mask;
-
+    private Canvas canvas;
     private int counter = 0;
     private int difficulty = 0;
 
@@ -40,11 +41,13 @@ public class MainView extends View {
             //난이도 설정이 이상하게 된 경우
             System.out.println("잘못된 접근입니다");
         }
+        this.setFocusableInTouchMode(true);
     }
 
 
     @Override
     protected void onDraw(Canvas canvas) {
+        this.canvas = canvas;
         if(difficulty == 0) {
             setTileSize(easy);
             updateTile(easy, canvas);
@@ -64,9 +67,43 @@ public class MainView extends View {
     public void onSizeChanged(int w, int h, int oldW, int oldH) {
         this.w = w;
         this.h = h;
+        if(canvas != null){
+            if(difficulty == 0) {
+                setTileSize(easy);
+                updateTile(easy, canvas);
+            }else if(difficulty ==1){
+                setTileSize(normal);
+                updateTile(normal, canvas);
+            }else if(difficulty == 2){
+                setTileSize(hard);
+                updateTile(hard, canvas);
+            }else{
+                //난이도 설정이 이상하게 된 경우
+                System.out.println("잘못된 접근입니다");
+            }
+        }
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        float currentX = event.getX();
+        float currentY = event.getY();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_DOWN:
+                if(difficulty == 0) {
+                    checkTouch(easy, currentX, currentY);
+                }else if(difficulty ==1){
+                    checkTouch(normal, currentX, currentY);
+                }else if(difficulty == 2){
+                    checkTouch(hard, currentX, currentY);
+                }else{
+                    System.out.println("잘못된 접근입니다");
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+        }
         return true;
     }
 
@@ -82,7 +119,7 @@ public class MainView extends View {
     private void setMine(int index){
         for (int i = 0; i < index; i++) {
             for(int j=0; j < index; j++){
-                tile[i][j] = new Tile();
+                tile[i][j] = new Tile(mContext);
                 //마스크는 패스(왼쪽 끝과, 오른쪽 끝은 빈 곳이다. 즉 지뢰가 설치될 수 있는 공간이 아님)
                 if(i==0 || j==0 || i==index-1 || j==index-1){
                     continue;
@@ -136,7 +173,7 @@ public class MainView extends View {
                     continue;
                 }
                 //이미지 타일 이미지 크기를 결정한다.
-                tile[i][j].setSize(w, h, index - mask);
+                tile[i][j].setSize(w / (index - mask), h / (index - mask));
             }
         }
     }
@@ -148,7 +185,24 @@ public class MainView extends View {
                     continue;
                 }
                 //이미지 위치를 지정한다. 테스트 해본 뒤 조정할 예정
-                tile[i][j].update(canvas, j*w/index, i*h/index);
+                tile[i][j].update(canvas, j * w /index, i*h/index);
+            }
+        }
+    }
+
+    private void checkTouch(int index, float currentX, float currentY){
+        for (int i = 0; i < index; i++) {
+            for (int j = 0; j < index; j++) {
+                if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
+                    continue;
+                }
+                //tile[i][j]의 안에 클릭했을 때 작동
+                if(tile[i][j].getX()+tile[i][j].getW() > currentX && tile[i][j].getX() < currentX && tile[i][j].getY() < currentY && tile[i][j].getY()+tile[i][j].getH() > currentY){
+                    //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
+                    //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.
+                    tile[i][j].setIsShow(true);
+                    GameManager.getInstance().setFindMine(GameManager.getInstance().getFindMine() + 1);
+                }
             }
         }
     }

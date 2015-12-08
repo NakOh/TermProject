@@ -2,6 +2,8 @@ package com.termproject.termproject.main;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Debug;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -53,12 +55,15 @@ public class MainView extends View {
         if(difficulty == 0) {
             setTileSize(easy);
             updateTile(easy, canvas);
+            invalidate();
         }else if(difficulty ==1){
             setTileSize(normal);
             updateTile(normal, canvas);
+            invalidate();
         }else if(difficulty == 2){
             setTileSize(hard);
             updateTile(hard, canvas);
+            invalidate();
         }else{
             //난이도 설정이 이상하게 된 경우
             System.out.println("잘못된 접근입니다");

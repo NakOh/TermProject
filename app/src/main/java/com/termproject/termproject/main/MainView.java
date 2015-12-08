@@ -90,10 +90,13 @@ public class MainView extends View {
             case MotionEvent.ACTION_DOWN:
                 if(difficulty == 0) {
                     checkTouch(easy, currentX, currentY);
+                    checkEnd(easy);
                 }else if(difficulty ==1){
                     checkTouch(normal, currentX, currentY);
+                    checkEnd(normal);
                 }else if(difficulty == 2){
                     checkTouch(hard, currentX, currentY);
+                    checkEnd(hard);
                 }else{
                     System.out.println("잘못된 접근입니다");
                 }
@@ -125,11 +128,19 @@ public class MainView extends View {
                 //25%의 확률로 마인을 배치한다.
                 if(randomRange(1,4) == 1) {
                     tile[i][j].setIsMine(true);
+                    GameManager.getInstance().setTotalMine(GameManager.getInstance().getTotalMine()+1);
                 }
             }
         }
     }
 
+    private void checkEnd(int index){
+        if(GameManager.getInstance().getTotalMine() == GameManager.getInstance().getFindMine()){
+            GameManager.getInstance().setEnd(true);
+            Log.d("GameView","GameEnd");
+            ((MainActivity) mContext).dialogSimple();
+        }
+    }
     private void setNumber(int index){
         for (int i = 0; i < index; i++) {
             for(int j=0; j < index; j++) {

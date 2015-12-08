@@ -1,6 +1,8 @@
 package com.termproject.termproject.main;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +41,25 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void dialogSimple(){
+        final Activity activity = this;
+        AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+        alt_bld.setMessage("게임을 다시 시작하시겠습니까?").setCancelable(false).setPositiveButton("네",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                view = new MainView(activity);
+                setContentView(view);
+            }
+        }).setNegativeButton("프로그램 종료", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Action for 'NO' Button
+                dialog.cancel();
+                moveTaskToBack(true);
+            }
+        });
+        AlertDialog alert = alt_bld.create();
+        alert.show();
     }
 
     @Override

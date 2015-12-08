@@ -7,6 +7,8 @@ public class GameManager {
     private static GameManager instance;
     private int difficulty;
     private int findMine;
+    private int totalMine = 0;
+    private boolean end = false;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -32,5 +34,21 @@ public class GameManager {
 
     public void setFindMine(int findMine) {
         this.findMine = findMine;
+    }
+
+    public boolean isEnd() {
+        return end;
+    }
+
+    public void setEnd(boolean end) {
+        this.end = end;
+    }
+
+    public int getTotalMine() {
+        return totalMine;
+    }
+
+    public void setTotalMine(int totalMine) {
+        this.totalMine = totalMine;
     }
 }

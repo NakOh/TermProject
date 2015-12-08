@@ -43,7 +43,7 @@ public class MainView extends View {
             makeTile(hard);
         }else{
             //난이도 설정이 이상하게 된 경우
-            System.out.println("잘못된 접근입니다");
+            Log.d("MainView", "Error");
         }
         this.setFocusableInTouchMode(true);
     }
@@ -53,41 +53,31 @@ public class MainView extends View {
     protected void onDraw(Canvas canvas) {
         this.canvas = canvas;
         if(difficulty == 0) {
-            setTileSize(easy);
             updateTile(easy, canvas);
-            invalidate();
         }else if(difficulty ==1){
-            setTileSize(normal);
             updateTile(normal, canvas);
-            invalidate();
         }else if(difficulty == 2){
-            setTileSize(hard);
             updateTile(hard, canvas);
-            invalidate();
         }else{
             //난이도 설정이 이상하게 된 경우
-            System.out.println("잘못된 접근입니다");
+            Log.d("MainView", "Error");
         }
+        invalidate();
     }
 
     @Override
     public void onSizeChanged(int w, int h, int oldW, int oldH) {
         this.w = w;
         this.h = h;
-        if(canvas != null){
-            if(difficulty == 0) {
-                setTileSize(easy);
-                updateTile(easy, canvas);
-            }else if(difficulty ==1){
-                setTileSize(normal);
-                updateTile(normal, canvas);
-            }else if(difficulty == 2){
-                setTileSize(hard);
-                updateTile(hard, canvas);
-            }else{
-                //난이도 설정이 이상하게 된 경우
-                System.out.println("잘못된 접근입니다");
-            }
+        if(difficulty == 0) {
+            setTileSize(easy);
+        }else if(difficulty ==1){
+            setTileSize(normal);
+        }else if(difficulty == 2){
+            setTileSize(hard);
+        }else{
+            //난이도 설정이 이상하게 된 경우
+            Log.d("MainView", "Error");
         }
     }
     @Override
@@ -193,7 +183,7 @@ public class MainView extends View {
                     continue;
                 }
                 //이미지 위치를 지정한다. 테스트 해본 뒤 조정할 예정
-                tile[i][j].update(canvas, j * w /index, i*h/index);
+                tile[i][j].update(canvas,  w/(index-mask) * i - w/(index-mask), h/(index-mask) * j - h/(index-mask));
             }
         }
     }
@@ -207,10 +197,12 @@ public class MainView extends View {
                 //tile[i][j]의 안에 클릭했을 때 작동
                 if(tile[i][j].getX()+tile[i][j].getW() > currentX && tile[i][j].getX() < currentX && tile[i][j].getY() < currentY && tile[i][j].getY()+tile[i][j].getH() > currentY){
                     //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
-                    //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.
+                    //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자)
                     //여기에 로직 추가하면 됩니다.
                     tile[i][j].setIsShow(true);
-                    GameManager.getInstance().setFindMine(GameManager.getInstance().getFindMine() + 1);
+                    if(tile[i][j].isMine()) {
+                        GameManager.getInstance().setFindMine(GameManager.getInstance().getFindMine() + 1);
+                    }
                 }
             }
         }

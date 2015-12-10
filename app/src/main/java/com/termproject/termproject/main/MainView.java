@@ -17,6 +17,7 @@ import com.termproject.termproject.model.Tile;
 public class MainView extends View {
     private Context mContext = null;
     private Tile[][] tile;
+    private int queueTile[][];
     private int w, h;
     //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
     //로직 상 +2 한 값을 입력해야한다.
@@ -27,13 +28,15 @@ public class MainView extends View {
     private Canvas canvas;
     private int counter = 0;
     private int difficulty = 0;
+    private int queueCounter = 0;
+    private int queueSearcher = -1;
 
     public MainView(Context context) {
         super(context);
         this.mContext = context;
         this.difficulty  = GameManager.getInstance().getDifficulty();
         //여기서 difficulty 값만 바꿔주면 난이도가 바뀜
-        this.difficulty = 0;
+        this.difficulty = 2;
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
         if(difficulty == 0) {
             makeTile(easy);
@@ -62,6 +65,7 @@ public class MainView extends View {
             //난이도 설정이 이상하게 된 경우
             Log.d("MainView", "Error");
         }
+        queueTile = new int[20][3];
         invalidate();
     }
 
@@ -141,6 +145,7 @@ public class MainView extends View {
             ((MainActivity) mContext).dialogSimple();
         }
     }
+
     private void setNumber(int index){
         for (int i = 0; i < index; i++) {
             for(int j=0; j < index; j++) {
@@ -200,6 +205,8 @@ public class MainView extends View {
     }
 
     private void checkTouch(int index, float currentX, float currentY){
+        queueCounter = 0;
+        queueSearcher = -1;
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
                 if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -208,14 +215,103 @@ public class MainView extends View {
                 //tile[i][j]의 안에 클릭했을 때 작동
                 if(tile[i][j].getX()+tile[i][j].getW() > currentX && tile[i][j].getX() < currentX && tile[i][j].getY() < currentY && tile[i][j].getY()+tile[i][j].getH() > currentY){
                     //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
-                    //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자)
+                    //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
                     //여기에 로직 추가하면 됩니다.
                     tile[i][j].setIsShow(true);
+
                     if(tile[i][j].isMine()) {
                         GameManager.getInstance().setFindMine(GameManager.getInstance().getFindMine() + 1);
                     }
+                    else if(tile[i][j].getNumber() == 0) {
+                        queueTile[queueCounter][1] = i;
+                        queueTile[queueCounter][2] = j;
+                        checkSide(index);
+                    }
                 }
             }
+        }
+    }
+
+    private void checkSide(int index) {
+        int i, j;
+        while( queueCounter != queueSearcher){
+            queueSearcher++;
+            i = queueTile[queueSearcher][1];
+            j = queueTile[queueSearcher][2];
+
+            if (i + 1 < index - 1 && !(tile[i+1][j].isShow()) && !(tile[i+1][j].isMine())) {
+                tile[i+1][j].setIsShow(true);
+
+                if(tile[i+1][j].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i+1;
+                    queueTile[queueCounter][2] = j;
+                }
+            }
+            if (j + 1 < index - 1 && !(tile[i][j+1].isShow()) && !(tile[i][j+1].isMine())) {
+                tile[i][j+1].setIsShow(true);
+
+                if(tile[i][j+1].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i;
+                    queueTile[queueCounter][2] = j+1;
+                }
+            }
+            if (i - 1 > 0 && !(tile[i-1][j].isShow()) && !(tile[i-1][j].isMine())) {
+                tile[i-1][j].setIsShow(true);
+
+                if(tile[i-1][j].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i-1;
+                    queueTile[queueCounter][2] = j;
+                }
+            }
+            if (j - 1 > 0 && !(tile[i][j-1].isShow()) && !(tile[i][j-1].isMine())) {
+                tile[i][j-1].setIsShow(true);
+
+                if(tile[i][j-1].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i;
+                    queueTile[queueCounter][2] = j-1;
+                }
+            }
+
+            /*if (i + 1 < index - 1 && j + 1 < index - 1 && !(tile[i+1][j+1].isShow()) && !(tile[i+1][j+1].isMine())) {
+                tile[i+1][j+1].setIsShow(true);
+
+                if(tile[i+1][j+1].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i+1;
+                    queueTile[queueCounter][2] = j+1;
+                }
+            }
+            if (i + 1 < index - 1 && j - 1 > 0 && !(tile[i+1][j-1].isShow()) && !(tile[i+1][j-1].isMine())) {
+                tile[i+1][j-1].setIsShow(true);
+
+                if(tile[i+1][j-1].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i+1;
+                    queueTile[queueCounter][2] = j-1;
+                }
+            }
+            if (i - 1 > 0 && j + 1 < index - 1 && !(tile[i-1][j+1].isShow()) && !(tile[i-1][j+1].isMine())) {
+                tile[i-1][j+1].setIsShow(true);
+
+                if(tile[i-1][j+1].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i-1;
+                    queueTile[queueCounter][2] = j+1;
+                }
+            }
+            if (i - 1 > 0 && j - 1 > 0 && !(tile[i-1][j-1].isShow()) && !(tile[i-1][j-1].isMine())) {
+                tile[i-1][j-1].setIsShow(true);
+
+                if(tile[i-1][j+1].getNumber() == 0) {
+                    queueCounter++;
+                    queueTile[queueCounter][1] = i-1;
+                    queueTile[queueCounter][2] = j-1;
+                }
+            }*/
         }
     }
 

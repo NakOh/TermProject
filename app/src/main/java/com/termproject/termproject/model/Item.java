@@ -10,7 +10,7 @@ public class Item {
     private boolean previewUsed = false;
     private boolean scorechangeUsed = false;
     private boolean oncemoreUsed = false;
-    private boolean timelimitUsed = false;
+    private boolean timeattackUsed = false;
 
     private Tile[][] tile;
 
@@ -40,6 +40,7 @@ public class Item {
 
     public void scoreChange() {
         //근데 플레이어가 한 번씩 모두 쓸 수 있으니까 둘 다 한 번씩 쓰면 무쓸모 아닌가싶음
+        //가 아니고 tile에 아이템을 랜덤배치해줘야하니까 있어도 될듯
     }
 
     public boolean onceMore() {
@@ -53,13 +54,21 @@ public class Item {
         return false;
     }
 
-    public boolean timeLimit() {
-        if(!timelimitUsed){
+    public boolean timeAttack() {
+        if(!timeattackUsed){
             //소켓통신을 할 때 player1의 상태와 함께 timeLimit 아이템을 썼는지 여부를 보내서
             //true면 시간제한이 절반으로 감소
-            timelimitUsed = true;
+            timeattackUsed = true;
             return true;
         }
+        return false;
+    }
+
+    public boolean defenceTimeAttack() {
+        return false;
+    }
+
+    public boolean defenceScoreChange() {
         return false;
     }
 }

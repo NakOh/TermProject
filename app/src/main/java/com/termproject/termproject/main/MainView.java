@@ -10,6 +10,7 @@ import android.view.View;
 import com.termproject.termproject.R;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
+import com.termproject.termproject.model.Item;
 
 /**
  * Created by kk070 on 2015-12-06.
@@ -275,43 +276,6 @@ public class MainView extends View {
                     queueTile[queueCounter][2] = j-1;
                 }
             }
-
-            /*if (i + 1 < index - 1 && j + 1 < index - 1 && !(tile[i+1][j+1].isShow()) && !(tile[i+1][j+1].isMine())) {
-                tile[i+1][j+1].setIsShow(true);
-
-                if(tile[i+1][j+1].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i+1;
-                    queueTile[queueCounter][2] = j+1;
-                }
-            }
-            if (i + 1 < index - 1 && j - 1 > 0 && !(tile[i+1][j-1].isShow()) && !(tile[i+1][j-1].isMine())) {
-                tile[i+1][j-1].setIsShow(true);
-
-                if(tile[i+1][j-1].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i+1;
-                    queueTile[queueCounter][2] = j-1;
-                }
-            }
-            if (i - 1 > 0 && j + 1 < index - 1 && !(tile[i-1][j+1].isShow()) && !(tile[i-1][j+1].isMine())) {
-                tile[i-1][j+1].setIsShow(true);
-
-                if(tile[i-1][j+1].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i-1;
-                    queueTile[queueCounter][2] = j+1;
-                }
-            }
-            if (i - 1 > 0 && j - 1 > 0 && !(tile[i-1][j-1].isShow()) && !(tile[i-1][j-1].isMine())) {
-                tile[i-1][j-1].setIsShow(true);
-
-                if(tile[i-1][j+1].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i-1;
-                    queueTile[queueCounter][2] = j-1;
-                }
-            }*/
         }
     }
 

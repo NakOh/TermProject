@@ -75,7 +75,24 @@ public class ClientManager {
     }
 
     public void sendMessage(){
-        (new SendMessage()).start();
+        try {
+            byte[] message = new byte[100];
+            message = "Test".getBytes();
+            writeSocket.write(message);
+
+        } catch (Exception e) {
+            final String recvInput = "메시지 전송에 실패하였습니다.";
+            Log.d("SetServer", e.getMessage());
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    setToast(recvInput);
+                }
+
+            });
+
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -291,29 +308,6 @@ public class ClientManager {
         }
     }
 
-    class SendMessage extends Thread {
-        public void run() {
-            try {
-                byte[] b = new byte[100];
-                b = "Hello, World!".getBytes();
-                writeSocket.write(b);
-
-            } catch (Exception e) {
-                final String recvInput = "메시지 전송에 실패하였습니다.";
-                Log.d("SetServer", e.getMessage());
-                mHandler.post(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        setToast(recvInput);
-                    }
-
-                });
-
-            }
-
-        }
-    }
 
 
 }

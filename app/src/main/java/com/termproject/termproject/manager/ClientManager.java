@@ -25,6 +25,7 @@ import java.net.Socket;
  */
 public class ClientManager {
     public static ClientManager instance;
+    private GameManager gameManager;
     private Context mContext = null;
     private ConnectivityManager cManager;
     private Socket socket;
@@ -50,6 +51,7 @@ public class ClientManager {
     private ClientManager(Context context) {
         this.mContext = context;
         cManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        gameManager = GameManager.getInstance();
     }
 
     private void setToast(String msg) {
@@ -72,6 +74,10 @@ public class ClientManager {
         (new CloseServer()).start();
     }
 
+    public void sendMessage(){
+        (new SendMessage()).start();
+    }
+
     @SuppressWarnings("deprecation")
     public void setInfo(String serverIpAddress) {
         wifi = cManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -80,6 +86,7 @@ public class ClientManager {
                 WifiManager wManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
                 WifiInfo info = wManager.getConnectionInfo();
                 myIpAddress = Formatter.formatIpAddress(info.getIpAddress());
+                this.serverIpAddress = myIpAddress;
                 setToast("현재 나 자신이 서버 입니다");
                 setServer();
             } else {
@@ -108,6 +115,7 @@ public class ClientManager {
                     }
 
                 });
+                gameManager.setServer(false);
                 (new recvSocket()).start();
 
             } catch (Exception e) {
@@ -118,6 +126,7 @@ public class ClientManager {
                     public void run() {
                         //연결에 실패한 경우 Server가 없는 것으로 판단하여 자신이 서버가 된다.
                         setToast(recvInput);
+                        setInfo("");
                         setServer();
                     }
                 });
@@ -161,14 +170,15 @@ public class ClientManager {
         public void run() {
             try {
                 serverSocket = new ServerSocket(port);
-                final String result = "서버 IP" + myIpAddress + "서버 포트 " + port + " 가 준비되었습니다.";
-                Log.d("SetServer", "IPAddress" + myIpAddress);
+                final String result = "서버 IP" + serverIpAddress + "서버 포트 " + port + " 가 준비되었습니다.";
+                Log.d("SetServer", "IPAddress" + serverIpAddress);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         setToast(result);
                     }
                 });
+                gameManager.setServer(true);
                 socket = serverSocket.accept();
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
@@ -211,16 +221,13 @@ public class ClientManager {
         public void run() {
             try {
                 readSocket = new DataInputStream(socket.getInputStream());
-
                 while (true) {
                     byte[] b = new byte[100];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
                     final String recvInput = input.trim();
-
                     if (ac == -1)
                         break;
-
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -244,14 +251,12 @@ public class ClientManager {
 
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
                         setToast(recvInput);
                     }
 
                 });
 
             }
-
         }
     }
 
@@ -261,7 +266,6 @@ public class ClientManager {
                 if (serverSocket != null) {
                     serverSocket.close();
                     socket.close();
-
                     mHandler.post(new Runnable() {
 
                         @Override
@@ -287,7 +291,7 @@ public class ClientManager {
         }
     }
 
-    class sendMessage extends Thread {
+    class SendMessage extends Thread {
         public void run() {
             try {
                 byte[] b = new byte[100];

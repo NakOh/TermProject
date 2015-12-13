@@ -9,7 +9,8 @@ public class GameManager {
     private int findMine;
     private int totalMine = 0;
     private boolean end = false;
-    private boolean multi = false;
+    private boolean multi;
+    private boolean server;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -60,5 +61,13 @@ public class GameManager {
 
     public void setMulti(boolean multi) {
         this.multi = multi;
+    }
+
+    public boolean isServer() {
+        return server;
+    }
+
+    public void setServer(boolean server) {
+        this.server = server;
     }
 }

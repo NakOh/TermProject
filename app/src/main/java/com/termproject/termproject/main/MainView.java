@@ -101,6 +101,7 @@ public class MainView extends View {
             case MotionEvent.ACTION_MOVE:
                 break;
             case MotionEvent.ACTION_DOWN:
+                clientManager.sendMessage();
                 if(difficulty == 0) {
                     checkTouch(easy, currentX, currentY);
                     checkEnd(easy);

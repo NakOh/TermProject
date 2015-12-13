@@ -3,6 +3,7 @@ package com.termproject.termproject.main;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Debug;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,8 @@ public class MainView extends View {
     private int difficulty = 0;
     private int queueCounter = 0;
     private int queueSearcher = -1;
+
+    Vibrator mVibrator;
 
     public MainView(Context context) {
         super(context);
@@ -222,6 +225,7 @@ public class MainView extends View {
 
                     if(tile[i][j].isMine()) {
                         GameManager.getInstance().setFindMine(GameManager.getInstance().getFindMine() + 1);
+                        mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
                     }
                     else if(tile[i][j].getNumber() == 0) {
                         queueTile[queueCounter][1] = i;

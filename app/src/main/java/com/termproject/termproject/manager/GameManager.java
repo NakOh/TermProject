@@ -9,6 +9,7 @@ public class GameManager {
     private int findMine;
     private int totalMine = 0;
     private boolean end = false;
+    private boolean multi = false;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -20,6 +21,7 @@ public class GameManager {
     public GameManager(int difficulty){
         this.difficulty = difficulty;
     }
+
     public int getDifficulty() {
         return difficulty;
     }
@@ -50,5 +52,13 @@ public class GameManager {
 
     public void setTotalMine(int totalMine) {
         this.totalMine = totalMine;
+    }
+
+    public boolean isMulti() {
+        return multi;
+    }
+
+    public void setMulti(boolean multi) {
+        this.multi = multi;
     }
 }

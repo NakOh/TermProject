@@ -6,19 +6,23 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import com.termproject.termproject.R;
+import com.termproject.termproject.manager.ClientManager;
 import com.termproject.termproject.manager.GameManager;
 
 public class MainActivity extends Activity {
-    private MainView view;
+    private MainView mainView;
+    private GameManager gameManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //View를 직접 만들어 셋팅한다.
-        GameManager.getInstance();
-        view = new MainView(this);
-        setContentView(view);
+        gameManager = GameManager.getInstance();
+        mainView = new MainView(this);
+        setContentView(mainView);
     }
 
     @Override
@@ -48,19 +52,19 @@ public class MainActivity extends Activity {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
         alt_bld.setMessage("게임을 다시 시작하시겠습니까?").setCancelable(false).setPositiveButton("네",new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                view = new MainView(activity);
-                setContentView(view);
             }
         }).setNegativeButton("프로그램 종료", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // Action for 'NO' Button
                 dialog.cancel();
-                moveTaskToBack(true);
+                moveTaskToBack(true);finish();
+                android.os.Process.killProcess(android.os.Process.myPid());
             }
         });
         AlertDialog alert = alt_bld.create();
         alert.show();
     }
+
 
     @Override
     protected void onPause(){ super.onPause();    }

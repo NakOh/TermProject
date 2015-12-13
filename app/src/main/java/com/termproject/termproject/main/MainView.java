@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.termproject.termproject.R;
+import com.termproject.termproject.manager.ClientManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
 import com.termproject.termproject.model.Item;
@@ -28,6 +29,8 @@ public class MainView extends View {
     private final static int normal = 7 + mask;
     private final static int hard = 10 + mask;
     private Canvas canvas;
+    private GameManager gameManager;
+    private ClientManager clientManager;
     private int counter = 0;
     private int difficulty = 0;
     private int queueCounter = 0;
@@ -37,8 +40,13 @@ public class MainView extends View {
 
     public MainView(Context context) {
         super(context);
+
         this.mContext = context;
-        this.difficulty  = GameManager.getInstance().getDifficulty();
+
+        gameManager = GameManager.getInstance();
+        clientManager = ClientManager.getInstance();
+
+        this.difficulty  = gameManager.getDifficulty();
         //여기서 difficulty 값만 바꿔주면 난이도가 바뀜
         this.difficulty = 2;
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
@@ -96,6 +104,7 @@ public class MainView extends View {
             case MotionEvent.ACTION_MOVE:
                 break;
             case MotionEvent.ACTION_DOWN:
+                clientManager.sendMessage();
                 if(difficulty == 0) {
                     checkTouch(easy, currentX, currentY);
                     checkEnd(easy);
@@ -136,15 +145,15 @@ public class MainView extends View {
                 //25%의 확률로 마인을 배치한다.
                 if(randomRange(1,4) == 1) {
                     tile[i][j].setIsMine(true);
-                    GameManager.getInstance().setTotalMine(GameManager.getInstance().getTotalMine()+1);
+                    gameManager.setTotalMine(gameManager.getTotalMine() + 1);
                 }
             }
         }
     }
 
     private void checkEnd(int index){
-        if(GameManager.getInstance().getTotalMine() == GameManager.getInstance().getFindMine()){
-            GameManager.getInstance().setEnd(true);
+        if(gameManager.getTotalMine() ==gameManager.getFindMine()){
+            gameManager.setEnd(true);
             Log.d("GameView","GameEnd");
             ((MainActivity) mContext).dialogSimple();
         }
@@ -203,7 +212,7 @@ public class MainView extends View {
                     continue;
                 }
                 //이미지 위치를 지정한다. 테스트 해본 뒤 조정할 예정
-                tile[i][j].update(canvas,  w/(index-mask) * i - w/(index-mask), h/(index-mask) * j - h/(index-mask));
+                tile[i][j].update(canvas, w / (index - mask) * i - w / (index - mask), h / (index - mask) * j - h / (index - mask));
             }
         }
     }
@@ -224,8 +233,8 @@ public class MainView extends View {
                     tile[i][j].setIsShow(true);
 
                     if(tile[i][j].isMine()) {
-                        GameManager.getInstance().setFindMine(GameManager.getInstance().getFindMine() + 1);
                         mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
+                       gameManager.setFindMine(gameManager.getInstance().getFindMine() + 1);
                     }
                     else if(tile[i][j].getNumber() == 0) {
                         queueTile[queueCounter][1] = i;

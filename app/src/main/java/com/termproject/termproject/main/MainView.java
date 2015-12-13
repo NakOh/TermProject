@@ -1,7 +1,9 @@
 package com.termproject.termproject.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -10,10 +12,21 @@ import android.view.View;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
+import com.termproject.termproject.main.DeviceService;
 
 /**
  * Created by kk070 on 2015-12-06.
  */
+
+class mVib extends Activity{
+    Vibrator mVibrator;
+    @Override
+    protected void onCreate(Bundle bundle){
+        super.onCreate(bundle);
+       //mVibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+    }
+}
+
 public class MainView extends View {
     private Context mContext = null;
     private Tile[][] tile;
@@ -33,7 +46,16 @@ public class MainView extends View {
     private int queueCounter = 0;
     private int queueSearcher = -1;
 
-    Vibrator mVibrator;
+    public int myCombo = 0;
+    public int countDown = 0;
+    public int flag = 100;
+    public int totalMine = 0;
+    public int foundMine = 0;
+
+    protected static final int MY_TURN = 100;
+
+
+    mVib vib = new mVib();
 
     public MainView(Context context) {
         super(context);
@@ -42,6 +64,8 @@ public class MainView extends View {
 
         gameManager = GameManager.getInstance();
         TCPManager = TCPManager.getInstance();
+
+        vib.mVibrator = (Vibrator)vib.getSystemService(Context.VIBRATOR_SERVICE);
 
         if(gameManager.isServer()) {
             this.difficulty = gameManager.getDifficulty();
@@ -61,6 +85,8 @@ public class MainView extends View {
             Log.d("MainView", "Error");
         }
         this.setFocusableInTouchMode(true);
+
+        totalMine = gameManager.getTotalMine();
     }
 
 
@@ -232,8 +258,11 @@ public class MainView extends View {
                     tile[i][j].setIsShow(true);
 
                     if(tile[i][j].isMine()) {
+                        vib.mVibrator.vibrate(10);
+
                      //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
                        gameManager.setFindMine(gameManager.getInstance().getFindMine() + 1);
+                        foundMine = gameManager.getFindMine();
                     }
                     else if(tile[i][j].getNumber() == 0) {
                         queueTile[queueCounter][1] = i;
@@ -294,4 +323,6 @@ public class MainView extends View {
     private int randomRange(int n1, int n2) {
         return (int) (Math.random() * (n2 - n1 + 1)) + n1;
     }
+
+
 }

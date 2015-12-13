@@ -2,17 +2,14 @@ package com.termproject.termproject.main;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.os.Debug;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.termproject.termproject.R;
-import com.termproject.termproject.manager.ClientManager;
+import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
-import com.termproject.termproject.model.Item;
 
 /**
  * Created by kk070 on 2015-12-06.
@@ -30,7 +27,7 @@ public class MainView extends View {
     private final static int hard = 10 + mask;
     private Canvas canvas;
     private GameManager gameManager;
-    private ClientManager clientManager;
+    private TCPManager TCPManager;
     private int counter = 0;
     private int difficulty = 0;
     private int queueCounter = 0;
@@ -44,9 +41,13 @@ public class MainView extends View {
         this.mContext = context;
 
         gameManager = GameManager.getInstance();
-        clientManager = ClientManager.getInstance();
+        TCPManager = TCPManager.getInstance();
 
-        this.difficulty  = gameManager.getDifficulty();
+        if(gameManager.isServer()) {
+            this.difficulty = gameManager.getDifficulty();
+        }else{
+
+        }
 
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
         if(difficulty == 0) {

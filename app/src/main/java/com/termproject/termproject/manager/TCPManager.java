@@ -10,12 +10,8 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,8 +19,8 @@ import java.net.Socket;
 /**
  * Created by kk070 on 2015-12-12.
  */
-public class ClientManager {
-    public static ClientManager instance;
+public class TCPManager {
+    public static TCPManager instance;
     private GameManager gameManager;
     private Context mContext = null;
     private ConnectivityManager cManager;
@@ -39,16 +35,16 @@ public class ClientManager {
     private String serverIpAddress;
     private int port = 8050;
 
-    public static ClientManager getInstance() {
+    public static TCPManager getInstance() {
         return instance;
     }
 
-    public static ClientManager getFirstInstance(Context context) {
-        instance = new ClientManager(context);
+    public static TCPManager getFirstInstance(Context context) {
+        instance = new TCPManager(context);
         return instance;
     }
 
-    private ClientManager(Context context) {
+    private TCPManager(Context context) {
         this.mContext = context;
         cManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         gameManager = GameManager.getInstance();

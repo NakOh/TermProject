@@ -6,10 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 
 import com.termproject.termproject.R;
-import com.termproject.termproject.manager.ClientManager;
 import com.termproject.termproject.manager.GameManager;
 
 public class MainActivity extends Activity {

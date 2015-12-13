@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.termproject.termproject.R;
 import com.termproject.termproject.main.MainActivity;
@@ -25,6 +27,10 @@ public class MenuActivity extends Activity {
     private Button button2;
     private EditText editText;
 
+    private RadioButton option1;
+    private RadioButton option2;
+    private RadioButton option3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +38,15 @@ public class MenuActivity extends Activity {
         clientManager = ClientManager.getFirstInstance(this);
 
         setContentView(R.layout.main);
+
+        option1 = (RadioButton) findViewById(R.id.radioButton1);
+        option2 = (RadioButton) findViewById(R.id.radioButton2);
+        option3 = (RadioButton) findViewById(R.id.radioButton3);
+        option1.setOnClickListener(optionOnClickListener);
+        option2.setOnClickListener(optionOnClickListener);
+        option3.setOnClickListener(optionOnClickListener);
+        option2.setChecked(true);
+        gameManager.setDifficulty(1);
 
         button1 = (Button) findViewById(R.id.button1);
         button2 = (Button) findViewById(R.id.button2);
@@ -57,6 +72,20 @@ public class MenuActivity extends Activity {
             }
         });
     }
+
+    RadioButton.OnClickListener optionOnClickListener
+            = new RadioButton.OnClickListener() {
+
+        public void onClick(View v) {
+            if(option1.isChecked()){
+                gameManager.setDifficulty(0);
+            }else if(option2.isChecked()){
+                gameManager.setDifficulty(1);
+            }else if(option3.isChecked()){
+                gameManager.setDifficulty(2);
+            }
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -74,12 +74,11 @@ public class ClientManager {
         (new CloseServer()).start();
     }
 
-    public void sendMessage(){
+    public void sendMessage(String message){
         try {
-            byte[] message = new byte[100];
-            message = "Test".getBytes();
-            writeSocket.write(message);
-
+            byte[] buffer = new byte[1000];
+            buffer = message.getBytes();
+            writeSocket.write(buffer);
         } catch (Exception e) {
             final String recvInput = "메시지 전송에 실패하였습니다.";
             Log.d("SetServer", e.getMessage());
@@ -91,7 +90,6 @@ public class ClientManager {
                 }
 
             });
-
         }
     }
 
@@ -200,7 +198,7 @@ public class ClientManager {
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
                 while (true) {
-                    byte[] b = new byte[100];
+                    byte[] b = new byte[1000];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
                     final String recvInput = input.trim();

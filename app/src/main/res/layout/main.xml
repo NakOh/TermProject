@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
@@ -22,5 +23,35 @@
         android:ems="10"
         android:id="@+id/editText"
         android:text="IP주소를 입력" />
+
+    <RadioGroup
+        android:id="@+id/radiogroup1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="난이도 상"
+        android:id="@+id/radioButton3"
+        android:layout_gravity="center_horizontal"
+        android:checked="false" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="난이도 중"
+        android:id="@+id/radioButton2"
+        android:layout_gravity="center_horizontal"
+        android:checked="false" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="난이도 하"
+        android:id="@+id/radioButton1"
+        android:layout_gravity="center_horizontal"
+        android:checked="false" />
+    </RadioGroup>
 
 </LinearLayout>

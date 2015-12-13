@@ -47,8 +47,7 @@ public class MainView extends View {
         clientManager = ClientManager.getInstance();
 
         this.difficulty  = gameManager.getDifficulty();
-        //여기서 difficulty 값만 바꿔주면 난이도가 바뀜
-        this.difficulty = 2;
+
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
         if(difficulty == 0) {
             makeTile(easy);
@@ -104,7 +103,6 @@ public class MainView extends View {
             case MotionEvent.ACTION_MOVE:
                 break;
             case MotionEvent.ACTION_DOWN:
-                clientManager.sendMessage();
                 if(difficulty == 0) {
                     checkTouch(easy, currentX, currentY);
                     checkEnd(easy);
@@ -233,7 +231,7 @@ public class MainView extends View {
                     tile[i][j].setIsShow(true);
 
                     if(tile[i][j].isMine()) {
-                        mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
+                     //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
                        gameManager.setFindMine(gameManager.getInstance().getFindMine() + 1);
                     }
                     else if(tile[i][j].getNumber() == 0) {

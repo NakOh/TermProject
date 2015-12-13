@@ -52,6 +52,8 @@ public class MainActivity extends Activity {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
         alt_bld.setMessage("게임을 다시 시작하시겠습니까?").setCancelable(false).setPositiveButton("네",new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                mainView = new MainView(activity);
+                setContentView(mainView);
             }
         }).setNegativeButton("프로그램 종료", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

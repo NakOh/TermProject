@@ -16,6 +16,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -33,18 +34,20 @@ public class ClientManager {
     private NetworkInfo wifi;
     private ServerSocket serverSocket;
 
-    private String ipAddress;
-    private int port = 1010;
+    private String myIpAddress;
+    private String serverIpAddress;
+    private int port = 8050;
 
-    public static ClientManager getInstance(){
-        return instance;
-    }
-    public static ClientManager getFirstInstance(Context context){
-         instance = new ClientManager(context);
+    public static ClientManager getInstance() {
         return instance;
     }
 
-    private ClientManager(Context context){
+    public static ClientManager getFirstInstance(Context context) {
+        instance = new ClientManager(context);
+        return instance;
+    }
+
+    private ClientManager(Context context) {
         this.mContext = context;
         cManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
@@ -53,29 +56,37 @@ public class ClientManager {
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public void connet(){
+    public void connet() {
         (new Connect()).start();
     }
 
-    public void disconnet(){
+    public void disconnet() {
         (new Disconnect()).start();
     }
 
-    public void setServer(){
+    public void setServer() {
         (new SetServer()).start();
     }
 
-    public void closeServer(){
+    public void closeServer() {
         (new CloseServer()).start();
     }
 
     @SuppressWarnings("deprecation")
-    public void setInfo(){
+    public void setInfo(String serverIpAddress) {
         wifi = cManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifi.isConnected()) {
-            WifiManager wManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-            WifiInfo info = wManager.getConnectionInfo();
-            ipAddress = Formatter.formatIpAddress(info.getIpAddress());
+            if (serverIpAddress.length() == 0 || serverIpAddress.length() > 15 || serverIpAddress.equals("IP주소를 입력")) {
+                WifiManager wManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+                WifiInfo info = wManager.getConnectionInfo();
+                myIpAddress = Formatter.formatIpAddress(info.getIpAddress());
+                setToast("현재 나 자신이 서버 입니다");
+                setServer();
+            } else {
+                this.serverIpAddress = serverIpAddress;
+                setToast("현재 클라이언트입니다. 서버로 접근 시도 합니다");
+                connet();
+            }
         } else {
             setToast("Wifi에 연결이 되어 있지 않습니다");
         }
@@ -85,29 +96,30 @@ public class ClientManager {
         public void run() {
             Log.d("Connect", "Run Connect");
             try {
-                socket = new Socket(ipAddress, port);
+                socket = new Socket();
+                //socket.setSoTimeout(5000);
+                socket.connect(new InetSocketAddress(serverIpAddress, port));
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
                         setToast("연결에 성공하였습니다.");
                     }
 
                 });
                 (new recvSocket()).start();
+
             } catch (Exception e) {
-                final String recvInput = "연결에 실패하였습니다.";
+                final String recvInput = "연결에 실패하였습니다. 서버를 만듭니다";
                 Log.d("Connect", e.getMessage());
                 mHandler.post(new Runnable() {
-
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
+                        //연결에 실패한 경우 Server가 없는 것으로 판단하여 자신이 서버가 된다.
                         setToast(recvInput);
+                        setServer();
                     }
-
                 });
 
             }
@@ -124,13 +136,10 @@ public class ClientManager {
 
                         @Override
                         public void run() {
-                            // TODO Auto-generated method stub
                             setToast("연결이 종료되었습니다.");
                         }
                     });
-
                 }
-
             } catch (Exception e) {
                 final String recvInput = "연결에 실패하였습니다.";
                 Log.d("Connect", e.getMessage());
@@ -138,7 +147,6 @@ public class ClientManager {
 
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
                         setToast(recvInput);
                     }
 
@@ -152,12 +160,13 @@ public class ClientManager {
     class SetServer extends Thread {
         public void run() {
             try {
-                 serverSocket = new ServerSocket(port);
-                 final String result = "서버 포트 " + port + " 가 준비되었습니다.";
+                serverSocket = new ServerSocket(port);
+                final String result = "서버 IP" + myIpAddress + "서버 포트 " + port + " 가 준비되었습니다.";
+                Log.d("SetServer", "IPAddress" + myIpAddress);
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                          setToast(result);
+                        setToast(result);
                     }
                 });
                 socket = serverSocket.accept();
@@ -168,20 +177,18 @@ public class ClientManager {
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
                     final String recvInput = input.trim();
-                    if(ac==-1)
+                    if (ac == -1)
                         break;
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            // TODO Auto-generated method stub
                             setToast(recvInput);
                         }
                     });
                 }
-                mHandler.post(new Runnable(){
+                mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
                         setToast("연결이 종료되었습니다.");
                     }
                 });
@@ -201,7 +208,6 @@ public class ClientManager {
     }
 
     class recvSocket extends Thread {
-
         public void run() {
             try {
                 readSocket = new DataInputStream(socket.getInputStream());
@@ -212,23 +218,21 @@ public class ClientManager {
                     String input = new String(b, 0, b.length);
                     final String recvInput = input.trim();
 
-                    if(ac==-1)
+                    if (ac == -1)
                         break;
 
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            // TODO Auto-generated method stub
                             setToast(recvInput);
                         }
 
                     });
                 }
-                mHandler.post(new Runnable(){
+                mHandler.post(new Runnable() {
 
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
                         setToast("연결이 종료되었습니다.");
                     }
 
@@ -262,7 +266,6 @@ public class ClientManager {
 
                         @Override
                         public void run() {
-                            // TODO Auto-generated method stub
                             setToast("서버가 종료되었습니다..");
                         }
                     });
@@ -274,7 +277,6 @@ public class ClientManager {
 
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
                         setToast(recvInput);
                     }
 
@@ -299,7 +301,6 @@ public class ClientManager {
 
                     @Override
                     public void run() {
-                        // TODO Auto-generated method stub
                         setToast(recvInput);
                     }
 

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import com.termproject.termproject.R;
 import com.termproject.termproject.manager.ClientManager;
@@ -13,12 +14,13 @@ import com.termproject.termproject.manager.GameManager;
 
 public class MainActivity extends Activity {
     private MainView mainView;
+    private GameManager gameManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //View를 직접 만들어 셋팅한다.
-        GameManager.getInstance();
-        ClientManager.getFirstInstance(this);
+        gameManager = GameManager.getInstance();
         mainView = new MainView(this);
         setContentView(mainView);
     }

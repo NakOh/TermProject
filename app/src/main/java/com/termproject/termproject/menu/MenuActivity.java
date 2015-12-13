@@ -7,9 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.termproject.termproject.R;
 import com.termproject.termproject.main.MainActivity;
+import com.termproject.termproject.manager.ClientManager;
 import com.termproject.termproject.manager.GameManager;
 
 /**
@@ -17,16 +19,24 @@ import com.termproject.termproject.manager.GameManager;
  */
 public class MenuActivity extends Activity {
     private GameManager gameManager;
+    private ClientManager clientManager;
 
     private Button button1;
     private Button button2;
+    private EditText editText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gameManager = GameManager.getInstance();
+        clientManager = ClientManager.getFirstInstance(this);
+
         setContentView(R.layout.main);
-        button1 =(Button) findViewById(R.id.button1);
-        button2 =(Button) findViewById(R.id.button2);
+
+        button1 = (Button) findViewById(R.id.button1);
+        button2 = (Button) findViewById(R.id.button2);
+        editText = (EditText) findViewById(R.id.editText);
+
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 gameManager.setMulti(false);
@@ -39,6 +49,8 @@ public class MenuActivity extends Activity {
         button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 gameManager.setMulti(true);
+                //멀티 버튼을 누르면 일단 연결을 시도합니다. 소켓을 만들어 연결을 시도하여 실패할 시 자기 자신이 서버를 만들어냅니다.
+                clientManager.setInfo(editText.getText().toString());
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(intent);

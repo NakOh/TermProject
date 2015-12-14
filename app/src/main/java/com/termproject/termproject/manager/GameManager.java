@@ -1,5 +1,7 @@
 package com.termproject.termproject.manager;
 
+import com.termproject.termproject.model.Tile;
+
 /**
  * Created by kk070 on 2015-12-06.
  */
@@ -13,6 +15,7 @@ public class GameManager {
     private boolean server;
     private boolean myTurn;
     private boolean wait;
+    private Tile[][] tile;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -87,5 +90,13 @@ public class GameManager {
 
     public void setWait(boolean wait) {
         this.wait = wait;
+    }
+
+    public Tile[][] getTile() {
+        return tile;
+    }
+
+    public void setTile(Tile[][] tile) {
+        this.tile = tile;
     }
 }

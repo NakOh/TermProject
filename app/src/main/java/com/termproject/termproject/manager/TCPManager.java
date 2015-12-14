@@ -35,6 +35,19 @@ public class TCPManager {
     private String serverIpAddress;
     private int port = 8050;
 
+    private Thread connect;
+    private Thread recvSocket;
+    private Thread checkMessage;
+    private final static int mask = 2;
+    private final static int easy = 5 + mask;
+    private final static int normal = 7 + mask;
+    private final static int hard = 10 + mask;
+
+    private String map = "";
+
+    private boolean checkConnect = false;
+
+
     public static TCPManager getInstance() {
         return instance;
     }
@@ -54,8 +67,9 @@ public class TCPManager {
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public void connet() {
-        (new Connect()).start();
+    public void connect() {
+        setConnect(new Connect());
+        getConnect().start();
     }
 
     public void disconnet() {
@@ -70,41 +84,35 @@ public class TCPManager {
         (new CloseServer()).start();
     }
 
-    public void sendMessage(String message){
+    public void sendMessage(String message) {
         try {
             byte[] buffer = new byte[1000];
             buffer = message.getBytes();
             writeSocket.write(buffer);
         } catch (Exception e) {
             final String recvInput = "메시지 전송에 실패하였습니다.";
-            Log.d("SetServer", e.getMessage());
-            mHandler.post(new Runnable() {
-
+            Log.d("sendMessage", e.getMessage());
+            getmHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     setToast(recvInput);
                 }
-
             });
         }
     }
 
-    private void checkMessage(){
-        switch (recvInput){
-            case "map":
-                //맵 정보
-                sendMessage("");
-                break;
-            case "endTurn":
-                //턴 넘기기 어느 타일을 눌렀는지에 대한 정보를 보낸다. (아이템 적용 후)
-                sendMessage("");
-                break;
-            default:
-                setToast("작동할 로직이 없습니다");
-                break;
 
+    private void collectMine(int index) {
+        for (int i = 0; i < index; i++) {
+            for (int j = 0; j < index; j++) {
+                if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
+                    continue;
+                }
+                if (gameManager.getTile()[i][j].isMine()) {
+                    map += String.valueOf(i) + "," + String.valueOf(j) + ",";
+                }
+            }
         }
-
     }
 
     @SuppressWarnings("deprecation")
@@ -121,10 +129,82 @@ public class TCPManager {
             } else {
                 this.serverIpAddress = serverIpAddress;
                 setToast("현재 클라이언트입니다. 서버로 접근 시도 합니다");
-                connet();
+                connect();
             }
         } else {
             setToast("Wifi에 연결이 되어 있지 않습니다");
+        }
+    }
+
+    public boolean isCheckConnect() {
+        return checkConnect;
+    }
+
+    public void setCheckConnect(boolean checkConnect) {
+        this.checkConnect = checkConnect;
+    }
+
+    public Thread getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Thread connect) {
+        this.connect = connect;
+    }
+
+    public Thread getRecvSocket() {
+        return recvSocket;
+    }
+
+    public void setRecvSocket(Thread recvSocket) {
+        this.recvSocket = recvSocket;
+    }
+
+    public Handler getmHandler() {
+        return mHandler;
+    }
+
+    public void setmHandler(Handler mHandler) {
+        this.mHandler = mHandler;
+    }
+
+    public Thread getCheckMessage() {
+        return checkMessage;
+    }
+
+    public void setCheckMessage(Thread checkMessage) {
+        this.checkMessage = checkMessage;
+    }
+
+    class CheckMessage extends Thread {
+        public void run() {
+            String[] result = recvInput.split(",");
+            switch (result[0]) {
+                case "wantMap":
+                    //client에서 Map 정보를 원한다면
+                    if (gameManager.getDifficulty() == 0) {
+                        collectMine(easy);
+                    } else if (gameManager.getDifficulty() == 1) {
+                        collectMine(normal);
+                    } else if (gameManager.getDifficulty() == 2) {
+                        collectMine(hard);
+                    }
+                    sendMessage("giveMap," + map);
+                    break;
+                case "endTurn":
+                    //턴 넘기기 어느 타일을 눌렀는지에 대한 정보를 보낸다. (아이템 적용 후)
+                    sendMessage("");
+                    break;
+                case "giveMap":
+                    System.out.println(recvInput);
+                    for (int i = 1; i < result.length; i = i + 2) {
+                        gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
+                    }
+                    break;
+                default:
+                    Log.d("checkMessage", result[0]);
+                    break;
+            }
         }
     }
 
@@ -133,24 +213,22 @@ public class TCPManager {
             Log.d("Connect", "Run Connect");
             try {
                 socket = new Socket();
-                //socket.setSoTimeout(5000);
                 socket.connect(new InetSocketAddress(serverIpAddress, port));
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
-                mHandler.post(new Runnable() {
+                setCheckConnect(true);
+                getmHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         setToast("연결에 성공하였습니다.");
                     }
-
                 });
                 gameManager.setServer(false);
-                (new recvSocket()).start();
-
+                recvSocket = new recvSocket();
             } catch (Exception e) {
                 final String recvInput = "연결에 실패하였습니다. 서버를 만듭니다";
                 Log.d("Connect", e.getMessage());
-                mHandler.post(new Runnable() {
+                getmHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         //연결에 실패한 경우 Server가 없는 것으로 판단하여 자신이 서버가 된다.
@@ -160,93 +238,6 @@ public class TCPManager {
                     }
                 });
 
-            }
-
-        }
-    }
-
-    class Disconnect extends Thread {
-        public void run() {
-            try {
-                if (socket != null) {
-                    socket.close();
-                    mHandler.post(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            setToast("연결이 종료되었습니다.");
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                final String recvInput = "연결에 실패하였습니다.";
-                Log.d("Connect", e.getMessage());
-                mHandler.post(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        setToast(recvInput);
-                    }
-
-                });
-
-            }
-
-        }
-    }
-
-    class SetServer extends Thread {
-        public void run() {
-            try {
-                serverSocket = new ServerSocket(port);
-                final String result = "서버 IP" + serverIpAddress + "서버 포트 " + port + " 가 준비되었습니다.";
-                Log.d("SetServer", "IPAddress" + serverIpAddress);
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setToast(result);
-                    }
-                });
-                gameManager.setServer(true);
-                socket = serverSocket.accept();
-                writeSocket = new DataOutputStream(socket.getOutputStream());
-                readSocket = new DataInputStream(socket.getInputStream());
-                //서버가 만들어지면 맵을 만들고 일단 상대방이 접속할 때 까지 기다린다.
-                gameManager.setWait(true);
-                while (true) {
-                    byte[] b = new byte[1000];
-                    int ac = readSocket.read(b, 0, b.length);
-                    String input = new String(b, 0, b.length);
-                    recvInput = input.trim();
-                    if (ac == -1)
-                        break;
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            //메시지가 들어오면 Wait를 풀고 메시지를 받는다.
-                            gameManager.setWait(false);
-                            setToast(recvInput);
-                            checkMessage();
-                        }
-                    });
-                }
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setToast("연결이 종료되었습니다.");
-                    }
-                });
-                serverSocket.close();
-                socket.close();
-            } catch (Exception e) {
-                final String recvInput = "서버 준비에 실패하였습니다.";
-                Log.d("SetServer", e.getMessage());
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setToast(recvInput);
-                    }
-                });
             }
         }
     }
@@ -259,30 +250,24 @@ public class TCPManager {
                     byte[] b = new byte[100];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
-                    final String recvInput = input.trim();
-                    if (ac == -1)
+                    recvInput = input.trim();
+                    setCheckMessage(new CheckMessage());
+                    checkMessage.start();
+                    checkMessage.join();
+                    if (ac == -1) {
                         break;
-                    mHandler.post(new Runnable() {
+                    }
+                    getmHandler().post(new Runnable() {
                         @Override
                         public void run() {
                             setToast(recvInput);
                         }
-
                     });
                 }
-                mHandler.post(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        setToast("연결이 종료되었습니다.");
-                    }
-
-                });
             } catch (Exception e) {
                 final String recvInput = "연결에 문제가 발생하여 종료되었습니다..";
                 Log.d("SetServer", e.getMessage());
-                mHandler.post(new Runnable() {
-
+                getmHandler().post(new Runnable() {
                     @Override
                     public void run() {
                         setToast(recvInput);
@@ -290,6 +275,87 @@ public class TCPManager {
 
                 });
 
+            }
+        }
+    }
+
+    class Disconnect extends Thread {
+        public void run() {
+            try {
+                if (socket != null) {
+                    socket.close();
+                    getmHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setToast("연결이 종료되었습니다.");
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                final String recvInput = "연결에 실패하였습니다.";
+                Log.d("Connect", e.getMessage());
+                getmHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setToast(recvInput);
+                    }
+                });
+            }
+        }
+    }
+
+
+    class SetServer extends Thread {
+        public void run() {
+            try {
+                serverSocket = new ServerSocket(port);
+                final String result = "서버 IP" + serverIpAddress + "서버 포트 " + port + " 가 준비되었습니다.";
+                Log.d("SetServer", "IPAddress" + serverIpAddress);
+                getmHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setToast(result);
+                    }
+                });
+                gameManager.setServer(true);
+                socket = serverSocket.accept();
+                writeSocket = new DataOutputStream(socket.getOutputStream());
+                readSocket = new DataInputStream(socket.getInputStream());
+                //서버가 만들어지면 맵을 만들고 일단 상대방이 접속할 때 까지 기다린다.
+                while (true) {
+                    byte[] b = new byte[1000];
+                    int ac = readSocket.read(b, 0, b.length);
+                    String input = new String(b, 0, b.length);
+                    recvInput = input.trim();
+                    if (ac == -1)
+                        break;
+                    checkMessage = new CheckMessage();
+                    checkMessage.start();
+                    checkMessage.join();
+                    getmHandler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setToast(recvInput);
+                        }
+                    });
+                }
+                getmHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setToast("연결이 종료되었습니다.");
+                    }
+                });
+                serverSocket.close();
+                socket.close();
+            } catch (Exception e) {
+                final String recvInput = "서버 준비에 실패하였습니다.";
+                Log.d("SetServer", e.getMessage());
+                getmHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setToast(recvInput);
+                    }
+                });
             }
         }
     }
@@ -300,7 +366,7 @@ public class TCPManager {
                 if (serverSocket != null) {
                     serverSocket.close();
                     socket.close();
-                    mHandler.post(new Runnable() {
+                    getmHandler().post(new Runnable() {
 
                         @Override
                         public void run() {
@@ -311,7 +377,7 @@ public class TCPManager {
             } catch (Exception e) {
                 final String recvInput = "서버 준비에 실패하였습니다.";
                 Log.d("SetServer", e.getMessage());
-                mHandler.post(new Runnable() {
+                getmHandler().post(new Runnable() {
 
                     @Override
                     public void run() {
@@ -324,7 +390,6 @@ public class TCPManager {
 
         }
     }
-
 
 
 }

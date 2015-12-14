@@ -65,6 +65,15 @@ public class MenuActivity extends Activity {
                 gameManager.setMulti(true);
                 //멀티 버튼을 누르면 일단 연결을 시도합니다. 소켓을 만들어 연결을 시도하여 실패할 시 자기 자신이 서버를 만들어냅니다.
                 TCPManager.setInfo(editText.getText().toString());
+                if (TCPManager.getConnect() != null) {
+                    try {
+                        TCPManager.getConnect().join();
+                        System.out.println("연결 완료");
+                        TCPManager.getRecvSocket().start();
+                        System.out.println("Client 받는 소켓 계쏙 작동");
+                    } catch (Exception e) {
+                    }
+                }
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(intent);
@@ -76,11 +85,11 @@ public class MenuActivity extends Activity {
             = new RadioButton.OnClickListener() {
 
         public void onClick(View v) {
-            if(option1.isChecked()){
+            if (option1.isChecked()) {
                 gameManager.setDifficulty(0);
-            }else if(option2.isChecked()){
+            } else if (option2.isChecked()) {
                 gameManager.setDifficulty(1);
-            }else if(option3.isChecked()){
+            } else if (option3.isChecked()) {
                 gameManager.setDifficulty(2);
             }
         }

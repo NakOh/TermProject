@@ -262,8 +262,18 @@ public class MainView extends View {
         setNumber(index);
         //숫자 셋팅 및 Mine 셋팅 후 Tile마다 이미지 설정
         setTileImage(index);
+        setMineNumber(index);
     }
 
+    private void setMineNumber(int index){
+        for (int i = 0; i < index; i++) {
+            for (int j = 0; j < index; j++) {
+                if(tile[i][j].isMine()){
+                    gameManager.setTotalMine(gameManager.getTotalMine() + 1);
+                }
+            }
+        }
+    }
     private void updateTile(int index, Canvas canvas) {
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {

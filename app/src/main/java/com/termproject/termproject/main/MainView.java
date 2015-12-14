@@ -52,10 +52,8 @@ public class MainView extends View {
     public int totalMine = 0;
     public int foundMine = 0;
 
+    Vibrator mVibrator;
     protected static final int MY_TURN = 100;
-
-
-    mVib vib = new mVib();
 
     public MainView(Context context) {
         super(context);
@@ -65,7 +63,8 @@ public class MainView extends View {
         gameManager = GameManager.getInstance();
         TCPManager = TCPManager.getInstance();
 
-        vib.mVibrator = (Vibrator)vib.getSystemService(Context.VIBRATOR_SERVICE);
+        mVibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+
 
         if(gameManager.isServer()) {
             this.difficulty = gameManager.getDifficulty();
@@ -258,7 +257,7 @@ public class MainView extends View {
                     tile[i][j].setIsShow(true);
 
                     if(tile[i][j].isMine()) {
-                        vib.mVibrator.vibrate(10);
+                        mVibrator.vibrate(10);
 
                      //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
                        gameManager.setFindMine(gameManager.getInstance().getFindMine() + 1);

@@ -11,6 +11,8 @@ public class GameManager {
     private boolean end = false;
     private boolean multi;
     private boolean server;
+    private boolean myTurn;
+    private boolean wait;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -69,5 +71,21 @@ public class GameManager {
 
     public void setServer(boolean server) {
         this.server = server;
+    }
+
+    public boolean isMyTurn() {
+        return myTurn;
+    }
+
+    public void setMyTurn(boolean myTurn) {
+        this.myTurn = myTurn;
+    }
+
+    public boolean isWait() {
+        return wait;
+    }
+
+    public void setWait(boolean wait) {
+        this.wait = wait;
     }
 }

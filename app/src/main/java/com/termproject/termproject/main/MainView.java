@@ -18,14 +18,6 @@ import com.termproject.termproject.main.DeviceService;
  * Created by kk070 on 2015-12-06.
  */
 
-class mVib extends Activity{
-    Vibrator mVibrator;
-    @Override
-    protected void onCreate(Bundle bundle){
-        super.onCreate(bundle);
-       //mVibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-    }
-}
 
 public class MainView extends View {
     private Context mContext = null;
@@ -40,7 +32,7 @@ public class MainView extends View {
     private final static int hard = 10 + mask;
     private Canvas canvas;
     private GameManager gameManager;
-    private TCPManager TCPManager;
+    private TCPManager tcpManager;
     private int counter = 0;
     private int difficulty = 0;
     private int queueCounter = 0;
@@ -49,6 +41,7 @@ public class MainView extends View {
     public int myCombo = 0;
     public int countDown = 0;
     public int flag = 100;
+
     public int totalMine = 0;
     public int foundMine = 0;
 
@@ -57,32 +50,28 @@ public class MainView extends View {
 
     public MainView(Context context) {
         super(context);
-
         this.mContext = context;
-
         gameManager = GameManager.getInstance();
-        TCPManager = TCPManager.getInstance();
-
+        tcpManager = TCPManager.getInstance();
         mVibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
-
-
         if(gameManager.isServer()) {
             this.difficulty = gameManager.getDifficulty();
+            //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
+            if(difficulty == 0) {
+                makeTile(easy);
+            }else if(difficulty ==1){
+                makeTile(normal);
+            }else if(difficulty == 2){
+                makeTile(hard);
+            }else{
+                //난이도 설정이 이상하게 된 경우
+                Log.d("MainView", "Error No Difficulty");
+            }
         }else{
-
+            //클라이언트라면 서버에서 받아온 정보를 통해서 맵을 만들도록 하자.
+            tcpManager.sendMessage("map");
         }
 
-        //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
-        if(difficulty == 0) {
-            makeTile(easy);
-        }else if(difficulty ==1){
-            makeTile(normal);
-        }else if(difficulty == 2){
-            makeTile(hard);
-        }else{
-            //난이도 설정이 이상하게 된 경우
-            Log.d("MainView", "Error");
-        }
         this.setFocusableInTouchMode(true);
 
         totalMine = gameManager.getTotalMine();
@@ -123,29 +112,33 @@ public class MainView extends View {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float currentX = event.getX();
-        float currentY = event.getY();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                break;
-            case MotionEvent.ACTION_DOWN:
-                if(difficulty == 0) {
-                    checkTouch(easy, currentX, currentY);
-                    checkEnd(easy);
-                }else if(difficulty ==1){
-                    checkTouch(normal, currentX, currentY);
-                    checkEnd(normal);
-                }else if(difficulty == 2){
-                    checkTouch(hard, currentX, currentY);
-                    checkEnd(hard);
-                }else{
-                    System.out.println("잘못된 접근입니다");
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                break;
+        if(gameManager.isWait()) {
+            return true;
+        }else {
+            float currentX = event.getX();
+            float currentY = event.getY();
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    if (difficulty == 0) {
+                        checkTouch(easy, currentX, currentY);
+                        checkEnd(easy);
+                    } else if (difficulty == 1) {
+                        checkTouch(normal, currentX, currentY);
+                        checkEnd(normal);
+                    } else if (difficulty == 2) {
+                        checkTouch(hard, currentX, currentY);
+                        checkEnd(hard);
+                    } else {
+                        System.out.println("잘못된 접근입니다");
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+            return true;
         }
-        return true;
     }
 
     private void makeTile(int index){

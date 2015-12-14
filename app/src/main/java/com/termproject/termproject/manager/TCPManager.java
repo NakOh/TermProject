@@ -30,7 +30,7 @@ public class TCPManager {
     private Handler mHandler = new Handler();
     private NetworkInfo wifi;
     private ServerSocket serverSocket;
-
+    private String recvInput;
     private String myIpAddress;
     private String serverIpAddress;
     private int port = 8050;
@@ -87,6 +87,24 @@ public class TCPManager {
 
             });
         }
+    }
+
+    private void checkMessage(){
+        switch (recvInput){
+            case "map":
+                //맵 정보
+                sendMessage("");
+                break;
+            case "endTurn":
+                //턴 넘기기 어느 타일을 눌렀는지에 대한 정보를 보낸다. (아이템 적용 후)
+                sendMessage("");
+                break;
+            default:
+                setToast("작동할 로직이 없습니다");
+                break;
+
+        }
+
     }
 
     @SuppressWarnings("deprecation")
@@ -193,17 +211,22 @@ public class TCPManager {
                 socket = serverSocket.accept();
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
+                //서버가 만들어지면 맵을 만들고 일단 상대방이 접속할 때 까지 기다린다.
+                gameManager.setWait(true);
                 while (true) {
                     byte[] b = new byte[1000];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
-                    final String recvInput = input.trim();
+                    recvInput = input.trim();
                     if (ac == -1)
                         break;
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
+                            //메시지가 들어오면 Wait를 풀고 메시지를 받는다.
+                            gameManager.setWait(false);
                             setToast(recvInput);
+                            checkMessage();
                         }
                     });
                 }

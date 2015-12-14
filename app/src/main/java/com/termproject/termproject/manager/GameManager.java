@@ -14,7 +14,8 @@ public class GameManager {
     private boolean multi;
     private boolean server;
     private boolean myTurn;
-    private boolean wait;
+    private boolean wait = true;
+    private Thread myThread;
     private Tile[][] tile;
 
     public static GameManager getInstance(){
@@ -98,5 +99,13 @@ public class GameManager {
 
     public void setTile(Tile[][] tile) {
         this.tile = tile;
+    }
+
+    public Thread getMyThread() {
+        return myThread;
+    }
+
+    public void setMyThread(Thread myThread) {
+        this.myThread = myThread;
     }
 }

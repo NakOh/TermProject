@@ -247,6 +247,7 @@ public class TCPManager {
             try {
                 readSocket = new DataInputStream(socket.getInputStream());
                 while (true) {
+                    gameManager.setWait(true);
                     byte[] b = new byte[100];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
@@ -254,6 +255,7 @@ public class TCPManager {
                     setCheckMessage(new CheckMessage());
                     checkMessage.start();
                     checkMessage.join();
+                    gameManager.setWait(false);
                     if (ac == -1) {
                         break;
                     }

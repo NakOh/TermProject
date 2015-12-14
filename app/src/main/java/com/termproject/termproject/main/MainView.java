@@ -33,6 +33,7 @@ public class MainView extends View {
     private Canvas canvas;
     private GameManager gameManager;
     private TCPManager tcpManager;
+    private Thread myThread;
     private int counter = 0;
     private int difficulty = 0;
     private int queueCounter = 0;
@@ -51,12 +52,13 @@ public class MainView extends View {
     public MainView(Context context) {
         super(context);
         this.mContext = context;
+        myThread = Thread.currentThread();
         gameManager = GameManager.getInstance();
         tcpManager = TCPManager.getInstance();
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
         this.difficulty = gameManager.getDifficulty();
-
+        gameManager.setMyThread(myThread);
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
         if (difficulty == 0) {
             makeTile(easy);
@@ -80,13 +82,13 @@ public class MainView extends View {
                 setNumber(easy);
                 //숫자 셋팅 및 Mine 셋팅 후 Tile마다 이미지 설정
                 setTileImage(easy);
-            }else if (difficulty == 1) {
+            } else if (difficulty == 1) {
                 setMine(easy);
                 //Mine설치 후 숫자 셋팅
                 setNumber(normal);
                 //숫자 셋팅 및 Mine 셋팅 후 Tile마다 이미지 설정
                 setTileImage(normal);
-            }else if (difficulty == 2) {
+            } else if (difficulty == 2) {
                 setMine(hard);
                 //Mine설치 후 숫자 셋팅
                 setNumber(hard);
@@ -252,6 +254,10 @@ public class MainView extends View {
         //클라이언트일 경우
         //서버로 맵 정보를 요구하자
         tcpManager.sendMessage("wantMap");
+        while(true){
+            if(!gameManager.isWait())
+                break;
+        }
         //Mine설치 후 숫자 셋팅
         setNumber(index);
         //숫자 셋팅 및 Mine 셋팅 후 Tile마다 이미지 설정

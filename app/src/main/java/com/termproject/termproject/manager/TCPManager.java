@@ -204,7 +204,7 @@ public class TCPManager {
                 case "touch":
                     gameManager.setMyTurn(true);
                     for (int i = 1; i < result.length; i = i + 2) {
-                        gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
+                        gameManager.checkUpdate(Integer.valueOf(result[i]),Integer.valueOf(result[i+1]));
                     }
                     break;
                 default:

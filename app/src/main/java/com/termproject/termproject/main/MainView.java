@@ -56,55 +56,31 @@ public class MainView extends View {
         gameManager = GameManager.getInstance();
         tcpManager = TCPManager.getInstance();
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-
         this.difficulty = gameManager.getDifficulty();
         gameManager.setMyThread(myThread);
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
         if (difficulty == 0) {
-            makeTile(easy);
+            gameManager.setIndex(easy);
         } else if (difficulty == 1) {
-            makeTile(normal);
+            gameManager.setIndex(normal);
         } else if (difficulty == 2) {
-            makeTile(hard);
+            gameManager.setIndex(hard);
         } else {
-            //난이도 설정이 이상하게 된 경우
             Log.d("MainView", "Error No Difficulty");
         }
+
+        makeTile(gameManager.getIndex());
 
         //서버에서 받아오기 위해 Tile을 넘김
         gameManager.setTile(tile);
 
         if (gameManager.isServer()) {
-            //Mine설치
-            if (difficulty == 0) {
-                setMine(easy);
-                //Mine설치 후 숫자 셋팅
-                setNumber(easy);
-                //숫자 셋팅 및 Mine 셋팅 후 Tile마다 이미지 설정
-                setTileImage(easy);
-            } else if (difficulty == 1) {
-                setMine(easy);
-                //Mine설치 후 숫자 셋팅
-                setNumber(normal);
-                //숫자 셋팅 및 Mine 셋팅 후 Tile마다 이미지 설정
-                setTileImage(normal);
-            } else if (difficulty == 2) {
-                setMine(hard);
-                //Mine설치 후 숫자 셋팅
-                setNumber(hard);
-                //숫자 셋팅 및 Mine 셋팅 후 Tile마다 이미지 설정
-                setTileImage(hard);
-            }
+            setMine(gameManager.getIndex());
+            setNumber(gameManager.getIndex());
+            setTileImage(gameManager.getIndex());
         } else {
-            if (difficulty == 0) {
-                setTileAgain(easy);
-            } else if (difficulty == 1) {
-                setTileAgain(normal);
-            } else if (difficulty == 2) {
-                setTileAgain(hard);
-            }
+            setTileAgain(gameManager.getIndex());
         }
-
         this.setFocusableInTouchMode(true);
         totalMine = gameManager.getTotalMine();
     }
@@ -124,6 +100,7 @@ public class MainView extends View {
             Log.d("MainView", "Error");
         }
         queueTile = new int[20][3];
+        gameManager.setQueueTile(queueTile);
         invalidate();
     }
 
@@ -145,31 +122,21 @@ public class MainView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-    if(gameManager.isMyTurn()) {
-        float currentX = event.getX();
-        float currentY = event.getY();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                break;
-            case MotionEvent.ACTION_DOWN:
-                if (difficulty == 0) {
-                    checkTouch(easy, currentX, currentY);
-                    checkEnd(easy);
-                } else if (difficulty == 1) {
-                    checkTouch(normal, currentX, currentY);
-                    checkEnd(normal);
-                } else if (difficulty == 2) {
-                    checkTouch(hard, currentX, currentY);
-                    checkEnd(hard);
-                } else {
-                    System.out.println("잘못된 접근입니다");
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                break;
+        if (gameManager.isMyTurn()) {
+            float currentX = event.getX();
+            float currentY = event.getY();
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    checkTouch(gameManager.getIndex(), currentX, currentY);
+                    checkEnd();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+        } else {
         }
-    }else{
-    }
         return true;
     }
 
@@ -198,7 +165,7 @@ public class MainView extends View {
         }
     }
 
-    private void checkEnd(int index) {
+    private void checkEnd() {
         if (gameManager.getTotalMine() == gameManager.getFindMine()) {
             gameManager.setEnd(true);
             Log.d("GameView", "GameEnd");
@@ -256,8 +223,8 @@ public class MainView extends View {
         //클라이언트일 경우
         //서버로 맵 정보를 요구하자
         tcpManager.sendMessage("wantMap");
-        while(true){
-            if(!gameManager.isWait())
+        while (true) {
+            if (!gameManager.isWait())
                 break;
         }
         //Mine설치 후 숫자 셋팅
@@ -267,15 +234,16 @@ public class MainView extends View {
         setMineNumber(index);
     }
 
-    private void setMineNumber(int index){
+    private void setMineNumber(int index) {
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
-                if(tile[i][j].isMine()){
+                if (tile[i][j].isMine()) {
                     gameManager.setTotalMine(gameManager.getTotalMine() + 1);
                 }
             }
         }
     }
+
     private void updateTile(int index, Canvas canvas) {
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
@@ -289,8 +257,8 @@ public class MainView extends View {
     }
 
     private void checkTouch(int index, float currentX, float currentY) {
-        queueCounter = 0;
-        queueSearcher = -1;
+        gameManager.setQueueCounter(0);
+        gameManager.setQueueSearcher(-1);
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
                 if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -302,72 +270,28 @@ public class MainView extends View {
                     //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
                     //여기에 로직 추가하면 됩니다.
                     tcpManager.sendMessage("touch," + i + "," + j);
-                    updateTouch(i,j,index);
+                    updateTouch(i, j, index);
                     gameManager.setMyTurn(false);
+                    break;
                 }
             }
         }
     }
 
-    private void updateTouch(int i, int j, int index){
+    private void updateTouch(int i, int j, int index) {
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
             mVibrator.vibrate(10);
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
-            gameManager.setFindMine(gameManager.getInstance().getFindMine() + 1);
+            gameManager.setFindMine(gameManager.getFindMine() + 1);
             foundMine = gameManager.getFindMine();
         } else if (tile[i][j].getNumber() == 0) {
-            queueTile[queueCounter][1] = i;
-            queueTile[queueCounter][2] = j;
-            checkSide(index);
+            gameManager.getQueueTile()[queueCounter][1] = i;
+            gameManager.getQueueTile()[queueCounter][2] = j;
+            gameManager.checkSide(index);
         }
     }
 
-    private void checkSide(int index) {
-        int i, j;
-        while (queueCounter != queueSearcher) {
-            queueSearcher++;
-            i = queueTile[queueSearcher][1];
-            j = queueTile[queueSearcher][2];
-
-            if (i + 1 < index - 1 && !(tile[i + 1][j].isShow()) && !(tile[i + 1][j].isMine())) {
-                tile[i + 1][j].setIsShow(true);
-
-                if (tile[i + 1][j].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i + 1;
-                    queueTile[queueCounter][2] = j;
-                }
-            }
-            if (j + 1 < index - 1 && !(tile[i][j + 1].isShow()) && !(tile[i][j + 1].isMine())) {
-                tile[i][j + 1].setIsShow(true);
-
-                if (tile[i][j + 1].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i;
-                    queueTile[queueCounter][2] = j + 1;
-                }
-            }
-            if (i - 1 > 0 && !(tile[i - 1][j].isShow()) && !(tile[i - 1][j].isMine())) {
-                tile[i - 1][j].setIsShow(true);
-
-                if (tile[i - 1][j].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i - 1;
-                    queueTile[queueCounter][2] = j;
-                }
-            }
-            if (j - 1 > 0 && !(tile[i][j - 1].isShow()) && !(tile[i][j - 1].isMine())) {
-                tile[i][j - 1].setIsShow(true);
-
-                if (tile[i][j - 1].getNumber() == 0) {
-                    queueCounter++;
-                    queueTile[queueCounter][1] = i;
-                    queueTile[queueCounter][2] = j - 1;
-                }
-            }
-        }
-    }
 
     private int randomRange(int n1, int n2) {
         return (int) (Math.random() * (n2 - n1 + 1)) + n1;

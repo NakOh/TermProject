@@ -10,11 +10,12 @@ public class GameManager {
     private int difficulty;
     private int index;
     private int findMine;
+    private int findOtherMine;
     private int totalMine = 0;
     private boolean end = false;
     private boolean multi;
     private boolean server;
-    private boolean myTurn;
+    private boolean myTurn ;
     private boolean first;
     private boolean wait = true;
     private Thread myThread;
@@ -34,7 +35,7 @@ public class GameManager {
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
-           setFindMine(getFindMine() + 1);
+           setFindOtherMine(getFindOtherMine() + 1);
         } else if (tile[i][j].getNumber() == 0) {
             getQueueTile()[getQueueCounter()][1] = i;
             getQueueTile()[getQueueCounter()][2] = j;
@@ -205,5 +206,13 @@ public class GameManager {
 
     public void setFirst(boolean first) {
         this.first = first;
+    }
+
+    public int getFindOtherMine() {
+        return findOtherMine;
+    }
+
+    public void setFindOtherMine(int findOtherMine) {
+        this.findOtherMine = findOtherMine;
     }
 }

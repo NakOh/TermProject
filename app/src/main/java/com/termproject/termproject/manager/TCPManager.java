@@ -10,6 +10,9 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.termproject.termproject.main.MainActivity;
+import com.termproject.termproject.menu.MenuActivity;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
@@ -58,18 +61,22 @@ public class TCPManager {
     }
 
     private TCPManager(Context context) {
-        this.mContext = context;
+        this.setmContext(context);
         cManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         gameManager = GameManager.getInstance();
     }
 
     private void setToast(String msg) {
-        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getmContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     public void connect() {
         setConnect(new Connect());
         getConnect().start();
+    }
+
+    private void end() {
+        ((MainActivity) MainActivity.mContext).dialogSimple();
     }
 
     public void disconnet() {
@@ -120,7 +127,7 @@ public class TCPManager {
         wifi = cManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifi.isConnected()) {
             if (serverIpAddress.length() == 0 || serverIpAddress.length() > 15 || serverIpAddress.equals("IP주소를 입력")) {
-                WifiManager wManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+                WifiManager wManager = (WifiManager) getmContext().getSystemService(Context.WIFI_SERVICE);
                 WifiInfo info = wManager.getConnectionInfo();
                 myIpAddress = Formatter.formatIpAddress(info.getIpAddress());
                 this.serverIpAddress = myIpAddress;
@@ -176,24 +183,22 @@ public class TCPManager {
         this.checkMessage = checkMessage;
     }
 
+    public Context getmContext() {
+        return mContext;
+    }
+
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
+
     class CheckMessage extends Thread {
         public void run() {
             String[] result = recvInput.split(",");
             switch (result[0]) {
                 case "wantMap":
                     //client에서 Map 정보를 원한다면
-                    if (gameManager.getDifficulty() == 0) {
-                        collectMine(easy);
-                    } else if (gameManager.getDifficulty() == 1) {
-                        collectMine(normal);
-                    } else if (gameManager.getDifficulty() == 2) {
-                        collectMine(hard);
-                    }
+                    collectMine(gameManager.getIndex());
                     sendMessage("giveMap," + map);
-                    break;
-                case "endTurn":
-                    //턴 넘기기 어느 타일을 눌렀는지에 대한 정보를 보낸다. (아이템 적용 후)
-                    sendMessage("");
                     break;
                 case "giveMap":
                     System.out.println(recvInput);
@@ -204,8 +209,11 @@ public class TCPManager {
                 case "touch":
                     gameManager.setMyTurn(true);
                     for (int i = 1; i < result.length; i = i + 2) {
-                        gameManager.checkUpdate(Integer.valueOf(result[i]),Integer.valueOf(result[i+1]));
+                        gameManager.checkUpdate(Integer.valueOf(result[i]), Integer.valueOf(result[i + 1]));
                     }
+                    break;
+                case "end":
+                    end();
                     break;
                 default:
                     Log.d("checkMessage", result[0]);

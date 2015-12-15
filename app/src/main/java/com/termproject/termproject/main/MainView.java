@@ -74,7 +74,7 @@ public class MainView extends View {
         //서버에서 받아오기 위해 Tile을 넘김
         gameManager.setTile(tile);
 
-        if (gameManager.isServer()) {
+        if (gameManager.isServer() || !gameManager.isMulti()) {
             setMine(gameManager.getIndex());
             setNumber(gameManager.getIndex());
             setTileImage(gameManager.getIndex());
@@ -122,7 +122,7 @@ public class MainView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (gameManager.isMyTurn() && !gameManager.isFirst()) {
+        if (gameManager.isMyTurn() && gameManager.isFirst() == false) {
             float currentX = event.getX();
             float currentY = event.getY();
             switch (event.getAction()) {
@@ -135,7 +135,19 @@ public class MainView extends View {
                 case MotionEvent.ACTION_UP:
                     break;
             }
-        } else {
+        } else if (!gameManager.isMulti()) {
+            float currentX = event.getX();
+            float currentY = event.getY();
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_MOVE:
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    checkTouch(gameManager.getIndex(), currentX, currentY);
+                    checkEnd();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
         }
         return true;
     }
@@ -166,8 +178,12 @@ public class MainView extends View {
     }
 
     private void checkEnd() {
-        if (gameManager.getTotalMine() == gameManager.getFindMine()) {
+        System.out.println(gameManager.getTotalMine() + "" + gameManager.getFindMine() + "" + gameManager.getFindOtherMine());
+        if (gameManager.getTotalMine() == gameManager.getFindMine() + gameManager.getFindOtherMine()) {
             gameManager.setEnd(true);
+            if (gameManager.isMulti()) {
+                tcpManager.sendMessage("end");
+            }
             Log.d("GameView", "GameEnd");
             ((MainActivity) mContext).dialogSimple();
         }
@@ -269,7 +285,9 @@ public class MainView extends View {
                     //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
                     //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
                     //여기에 로직 추가하면 됩니다.
-                    tcpManager.sendMessage("touch," + i + "," + j);
+                    if (gameManager.isMulti()) {
+                        tcpManager.sendMessage("touch," + i + "," + j);
+                    }
                     updateTouch(i, j, index);
                     gameManager.setMyTurn(false);
                     break;
@@ -279,6 +297,7 @@ public class MainView extends View {
     }
 
     private void updateTouch(int i, int j, int index) {
+        //나 자신이 눌렀을 때 (즉 내가 마인을 찾은거)
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
             mVibrator.vibrate(10);

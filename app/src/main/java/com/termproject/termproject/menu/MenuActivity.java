@@ -1,8 +1,12 @@
 package com.termproject.termproject.menu;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +16,7 @@ import android.widget.RadioButton;
 
 import com.termproject.termproject.R;
 import com.termproject.termproject.main.MainActivity;
+import com.termproject.termproject.main.MainView;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 
@@ -92,6 +97,8 @@ public class MenuActivity extends Activity {
             }
         }
     };
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

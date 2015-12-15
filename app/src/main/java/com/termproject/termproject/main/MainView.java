@@ -145,7 +145,7 @@ public class MainView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
+    if(gameManager.isMyTurn()) {
         float currentX = event.getX();
         float currentY = event.getY();
         switch (event.getAction()) {
@@ -168,6 +168,8 @@ public class MainView extends View {
             case MotionEvent.ACTION_UP:
                 break;
         }
+    }else{
+    }
         return true;
     }
 
@@ -299,21 +301,25 @@ public class MainView extends View {
                     //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
                     //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
                     //여기에 로직 추가하면 됩니다.
-                    tile[i][j].setIsShow(true);
-
-                    if (tile[i][j].isMine()) {
-                        mVibrator.vibrate(10);
-
-                        //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
-                        gameManager.setFindMine(gameManager.getInstance().getFindMine() + 1);
-                        foundMine = gameManager.getFindMine();
-                    } else if (tile[i][j].getNumber() == 0) {
-                        queueTile[queueCounter][1] = i;
-                        queueTile[queueCounter][2] = j;
-                        checkSide(index);
-                    }
+                    tcpManager.sendMessage("touch," + i + "," + j);
+                    updateTouch(i,j,index);
+                    gameManager.setMyTurn(false);
                 }
             }
+        }
+    }
+
+    private void updateTouch(int i, int j, int index){
+        tile[i][j].setIsShow(true);
+        if (tile[i][j].isMine()) {
+            mVibrator.vibrate(10);
+            //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
+            gameManager.setFindMine(gameManager.getInstance().getFindMine() + 1);
+            foundMine = gameManager.getFindMine();
+        } else if (tile[i][j].getNumber() == 0) {
+            queueTile[queueCounter][1] = i;
+            queueTile[queueCounter][2] = j;
+            checkSide(index);
         }
     }
 

@@ -68,9 +68,7 @@ public class MenuActivity extends Activity {
                 if (TCPManager.getConnect() != null) {
                     try {
                         TCPManager.getConnect().join();
-                        System.out.println("연결 완료");
                         TCPManager.getRecvSocket().start();
-                        System.out.println("Client 받는 소켓 계쏙 작동");
                     } catch (Exception e) {
                     }
                 }

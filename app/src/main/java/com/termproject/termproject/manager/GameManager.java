@@ -25,6 +25,9 @@ public class GameManager {
         return instance;
     }
 
+    public void checkUpdate(){
+
+    }
     public GameManager(int difficulty){
         this.difficulty = difficulty;
     }

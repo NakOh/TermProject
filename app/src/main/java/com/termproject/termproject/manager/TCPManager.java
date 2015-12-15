@@ -201,6 +201,12 @@ public class TCPManager {
                         gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
                     }
                     break;
+                case "touch":
+                    gameManager.setMyTurn(true);
+                    for (int i = 1; i < result.length; i = i + 2) {
+                        gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
+                    }
+                    break;
                 default:
                     Log.d("checkMessage", result[0]);
                     break;
@@ -224,6 +230,7 @@ public class TCPManager {
                     }
                 });
                 gameManager.setServer(false);
+                gameManager.setMyTurn(false);
                 recvSocket = new recvSocket();
             } catch (Exception e) {
                 final String recvInput = "연결에 실패하였습니다. 서버를 만듭니다";
@@ -320,11 +327,13 @@ public class TCPManager {
                     }
                 });
                 gameManager.setServer(true);
+                gameManager.setMyTurn(true);
                 socket = serverSocket.accept();
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
                 //서버가 만들어지면 맵을 만들고 일단 상대방이 접속할 때 까지 기다린다.
                 while (true) {
+                    gameManager.setWait(true);
                     byte[] b = new byte[1000];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
@@ -334,6 +343,7 @@ public class TCPManager {
                     checkMessage = new CheckMessage();
                     checkMessage.start();
                     checkMessage.join();
+                    gameManager.setWait(false);
                     getmHandler().post(new Runnable() {
                         @Override
                         public void run() {

@@ -122,7 +122,7 @@ public class MainView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (gameManager.isMyTurn()) {
+        if (gameManager.isMyTurn() && !gameManager.isFirst()) {
             float currentX = event.getX();
             float currentY = event.getY();
             switch (event.getAction()) {

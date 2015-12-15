@@ -15,6 +15,7 @@ public class GameManager {
     private boolean multi;
     private boolean server;
     private boolean myTurn;
+    private boolean first;
     private boolean wait = true;
     private Thread myThread;
     private Tile[][] tile;
@@ -196,5 +197,13 @@ public class GameManager {
 
     public void setQueueSearcher(int queueSearcher) {
         this.queueSearcher = queueSearcher;
+    }
+
+    public boolean isFirst() {
+        return first;
+    }
+
+    public void setFirst(boolean first) {
+        this.first = first;
     }
 }

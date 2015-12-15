@@ -328,12 +328,12 @@ public class TCPManager {
                 });
                 gameManager.setServer(true);
                 gameManager.setMyTurn(true);
+                gameManager.setFirst(true);
                 socket = serverSocket.accept();
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
                 //서버가 만들어지면 맵을 만들고 일단 상대방이 접속할 때 까지 기다린다.
                 while (true) {
-                    gameManager.setWait(true);
                     byte[] b = new byte[1000];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
@@ -343,7 +343,7 @@ public class TCPManager {
                     checkMessage = new CheckMessage();
                     checkMessage.start();
                     checkMessage.join();
-                    gameManager.setWait(false);
+                    gameManager.setFirst(false);
                     getmHandler().post(new Runnable() {
                         @Override
                         public void run() {

@@ -12,7 +12,7 @@ import android.view.View;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
-import com.termproject.termproject.main.DeviceService;
+import com.termproject.termproject.model.Item;
 
 /**
  * Created by kk070 on 2015-12-06.
@@ -22,6 +22,7 @@ import com.termproject.termproject.main.DeviceService;
 public class MainView extends View {
     private Context mContext = null;
     private Tile[][] tile;
+    private Item item;
     private int queueTile[][];
     private int w, h;
     //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
@@ -42,9 +43,6 @@ public class MainView extends View {
     public int myCombo = 0;
     public int countDown = 0;
     public int flag = 100;
-
-    public int totalMine = 0;
-    public int foundMine = 0;
 
     Vibrator mVibrator;
     protected static final int MY_TURN = 100;
@@ -82,7 +80,6 @@ public class MainView extends View {
             setTileAgain(gameManager.getIndex());
         }
         this.setFocusableInTouchMode(true);
-        totalMine = gameManager.getTotalMine();
     }
 
 
@@ -275,6 +272,12 @@ public class MainView extends View {
     private void checkTouch(int index, float currentX, float currentY) {
         gameManager.setQueueCounter(0);
         gameManager.setQueueSearcher(-1);
+
+        for(int i = 1; i < 7; i++) {
+            // 아이템을 클릭했을 때 작동
+            //
+        }
+
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
                 if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -289,7 +292,15 @@ public class MainView extends View {
                         tcpManager.sendMessage("touch," + i + "," + j);
                     }
                     updateTouch(i, j, index);
-                    gameManager.setMyTurn(false);
+                    if(!tile[i][j].isMine()) {
+                        if(item.oncemoreHave && !(item.oncemoreUsed)) {
+                            item.oncemoreUsed = true;
+                        } else {
+                            gameManager.setMyTurn(false);
+                        }
+                    } else if(tile[i][j].isMine()){
+                        gameManager.setMyTurn(true);
+                    }
                     break;
                 }
             }
@@ -303,11 +314,32 @@ public class MainView extends View {
             mVibrator.vibrate(10);
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
             gameManager.setFindMine(gameManager.getFindMine() + 1);
-            foundMine = gameManager.getFindMine();
         } else if (tile[i][j].getNumber() == 0) {
             gameManager.getQueueTile()[queueCounter][1] = i;
             gameManager.getQueueTile()[queueCounter][2] = j;
             gameManager.checkSide(index);
+        }  //else if (tile[i][j].isItem() { 여기에 아이템 발견했을 시 활성화 시키는 함수 구현 }
+    }
+
+    private void useItem(int index, float i, float j, int itemNum) {
+        if(itemNum == 1) { // preview
+            item.preview(index, i, j);
+        } else if(itemNum == 2) { // Once More
+            item.onceMore();
+            // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가
+        } else if (itemNum == 3) { //scoreChange
+            item.scoreChange();
+            int tmp;
+            tmp = gameManager.getFindMine();
+            gameManager.setFindMine(gameManager.getFindOtherMine());
+            gameManager.setFindOtherMine(tmp);
+            // 상대방에게 scoreChange 아이템 공격 보내기
+            // 만일 상대방이 defenseScoreChange()를 사용하면 무효화
+        } else if(itemNum == 4) { // timeAttack
+            item.timeAttack();
+            // 상대방에게 timeAttack 아이템 공격 보내기
+            // 제한 시간을 8초에서 4초로 변경
+            // 만일 상대방이 defenseTimeAttack()을 사용하면 무효화
         }
     }
 

@@ -7,15 +7,23 @@ import com.termproject.termproject.model.Tile;
  * Created by kk070 on 2015-12-02.
  */
 public class Item {
-    private boolean previewUsed = false;
-    private boolean scorechangeUsed = false;
-    private boolean oncemoreUsed = false;
-    private boolean timeattackUsed = false;
+    public boolean previewHave = false;
+    public boolean scorechangeHave = false;
+    public boolean oncemoreHave = false;
+    public boolean scoredefenseHave = false;
+    public boolean timeattackHave = false;
+    public boolean timedefenseHave = false;
 
+    public boolean previewUsed = false;
+    public boolean scorechangeUsed = false;
+    public boolean scoredefenseUsed = false;
+    public boolean oncemoreUsed = false;
+    public boolean timeattackUsed = false;
+    public boolean timedefenseUsed = false;
     private Tile[][] tile;
 
     public void preview(int index, float currentX, float currentY) {
-        if(!previewUsed){
+        if(previewHave && !previewUsed){
             for (int i = 0; i < index; i++) {
                 for (int j = 0; j < index; j++) {
                     if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -30,7 +38,12 @@ public class Item {
                         if(j + 1 < index - 1 && !tile[i][j+1].isShow()) tile[i][j+1].setIsShow(true);
                         if(i - 1 > 0 && !tile[i-1][j].isShow()) tile[i-1][j].setIsShow(true);
                         if(j - 1 > 0 && !tile[i][j-1].isShow()) tile[i][j-1].setIsShow(true);
-                        //약간의 시간이 지난 후 다시 setIsShow(false) 적용
+                        //약간의 시간이 지난 후 다시 setIsShow(false) 적용//
+                        ////////////////////////////////////////////////////
+                        if(i + 1 < index - 1 && tile[i+1][j].isShow()) tile[i+1][j].setIsShow(false);
+                        if(j + 1 < index - 1 && tile[i][j+1].isShow()) tile[i][j+1].setIsShow(false);
+                        if(i - 1 > 0 && tile[i-1][j].isShow()) tile[i-1][j].setIsShow(false);
+                        if(j - 1 > 0 && tile[i][j-1].isShow()) tile[i][j-1].setIsShow(false);
                     }
                 }
             }
@@ -38,13 +51,8 @@ public class Item {
         }
     }
 
-    public void scoreChange() {
-        //근데 플레이어가 한 번씩 모두 쓸 수 있으니까 둘 다 한 번씩 쓰면 무쓸모 아닌가싶음
-        //가 아니고 tile에 아이템을 랜덤배치해줘야하니까 있어도 될듯
-    }
-
     public boolean onceMore() {
-        if(!oncemoreUsed) {
+        if(oncemoreHave && !oncemoreUsed) {
             //MainView에 아이템 쓴 상태인지 체크하는 boolean값을 추가해서
             //아이템을 사용하면 true로 변경
             //만약 tile을 눌렀을 때 boolean 값이 true면 false로 변경한 후 한 번 더 선택하도록 설정
@@ -54,8 +62,24 @@ public class Item {
         return false;
     }
 
+    public boolean scoreChange() {
+        if(scorechangeHave && !scorechangeUsed) {
+            scorechangeUsed = true;
+            return true;
+         }
+        return false;
+    }
+
+    public boolean defenceScoreChange() {
+        if(scoredefenseHave && !scoredefenseUsed) {
+            scoredefenseUsed = true;
+            return true;
+        }
+        return false;
+    }
+
     public boolean timeAttack() {
-        if(!timeattackUsed){
+        if(timeattackHave && !timeattackUsed){
             //소켓통신을 할 때 player1의 상태와 함께 timeLimit 아이템을 썼는지 여부를 보내서
             //true면 시간제한이 절반으로 감소
             timeattackUsed = true;
@@ -65,10 +89,11 @@ public class Item {
     }
 
     public boolean defenceTimeAttack() {
+        if(timedefenseHave && !timedefenseUsed) {
+            timedefenseUsed = true;
+            return true;
+        }
         return false;
     }
 
-    public boolean defenceScoreChange() {
-        return false;
-    }
 }

@@ -23,6 +23,8 @@ public class GameManager {
     private int[][] queueTile;
     private int queueCounter = 0;
     private int queueSearcher = -1;
+    private int myCombo;
+    private int otherCombo;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -226,5 +228,21 @@ public class GameManager {
 
     public void setFindOtherMine(int findOtherMine) {
         this.findOtherMine = findOtherMine;
+    }
+
+    public void setMyCombo(int Combo) {
+        this.myCombo = Combo;
+    }
+
+    public void setOtherCombo(int Combo) {
+        this.otherCombo = Combo;
+    }
+
+    public int getMyCombo(){
+        return myCombo;
+    }
+
+    public int getOtherCombo() {
+        return otherCombo;
     }
 }

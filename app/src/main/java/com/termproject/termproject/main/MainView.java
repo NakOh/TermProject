@@ -293,12 +293,13 @@ public class MainView extends View {
                     }
                     updateTouch(i, j, index);
                     if(!tile[i][j].isMine()) {
-                        if(item.oncemoreHave && !(item.oncemoreUsed)) {
+                        if(item.oncemoreHave && !(item.oncemoreUsed)) { //지뢰가 아니어도 oncemore아이템 있으면 계속 자기 턴
                             item.oncemoreUsed = true;
-                        } else {
+                        } else { //지뢰가 아니면 Combo를 0으로 리셋하고 턴 종료
+                            gameManager.setMyCombo(0);
                             gameManager.setMyTurn(false);
                         }
-                    } else if(tile[i][j].isMine()){
+                    } else if(tile[i][j].isMine()){ //지뢰면 콤보 증가, 계속 자기 턴
                         gameManager.setMyTurn(true);
                     }
                     break;
@@ -311,7 +312,8 @@ public class MainView extends View {
         //나 자신이 눌렀을 때 (즉 내가 마인을 찾은거)
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
-            mVibrator.vibrate(10);
+            gameManager.setMyCombo(gameManager.getMyCombo()+1); //콤보 증가
+            mVibrator.vibrate(10 * gameManager.getMyCombo());
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
             gameManager.setFindMine(gameManager.getFindMine() + 1);
         } else if (tile[i][j].getNumber() == 0) {
@@ -322,6 +324,7 @@ public class MainView extends View {
     }
 
     private void useItem(int index, float i, float j, int itemNum) {
+        //아이템 버튼을 눌렀을 때
         if(itemNum == 1) { // preview
             item.preview(index, i, j);
         } else if(itemNum == 2) { // Once More

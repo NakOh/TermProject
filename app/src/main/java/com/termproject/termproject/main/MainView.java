@@ -12,7 +12,6 @@ import android.view.View;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
-import com.termproject.termproject.model.Item;
 
 /**
  * Created by kk070 on 2015-12-06.
@@ -22,7 +21,6 @@ import com.termproject.termproject.model.Item;
 public class MainView extends View {
     private Context mContext = null;
     private Tile[][] tile;
-    private Item item;
     private int queueTile[][];
     private int w, h;
     //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
@@ -39,8 +37,12 @@ public class MainView extends View {
     private int difficulty = 0;
     private int queueCounter = 0;
     private int queueSearcher = -1;
+    private String firstLine, secondLine;
+    private int retTextLCD;
+    private int segData = 0;
 
-    public int myCombo = 0;
+    private DeviceService deviceService;
+
     public int countDown = 0;
     public int flag = 100;
 
@@ -53,7 +55,18 @@ public class MainView extends View {
         myThread = Thread.currentThread();
         gameManager = GameManager.getInstance();
         tcpManager = TCPManager.getInstance();
-        mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        //mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        gameManager.makeVibrator(context);
+        mVibrator = gameManager.getVibrator();
+        deviceService = gameManager.getDeviceService();
+
+        deviceService.IOCtlClear();
+        deviceService.IOCtlReturnHome();
+        deviceService.IOCtlDisplay(true);
+        deviceService.IOCtlCursor(false);
+        deviceService.IOCtlBlink(false);
+        deviceService.SegmentIOControl(0);
+
         this.difficulty = gameManager.getDifficulty();
         gameManager.setMyThread(myThread);
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
@@ -80,6 +93,19 @@ public class MainView extends View {
             setTileAgain(gameManager.getIndex());
         }
         this.setFocusableInTouchMode(true);
+
+        if(!gameManager.isMulti()){
+            firstLine = "single Play";
+        } else if(gameManager.isMulti() && gameManager.isServer()){
+            firstLine = "I'm Server";
+        } else if(gameManager.isMulti() && !gameManager.isServer()){
+            firstLine = "I'm Client";
+        }
+        secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
+        retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
+        deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
+        segData = gameManager.getTotalMine() * 10000;
+        deviceService.SegmentControl(segData);
     }
 
 
@@ -181,6 +207,8 @@ public class MainView extends View {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("end");
             }
+            if(gameManager.getFindMine() > gameManager.getFindOtherMine()) deviceService.DotMatrixControl("WIN");
+            else deviceService.DotMatrixControl("LOSE");
             Log.d("GameView", "GameEnd");
             ((MainActivity) mContext).dialogSimple();
         }
@@ -293,8 +321,8 @@ public class MainView extends View {
                     }
                     updateTouch(i, j, index);
                     if(!tile[i][j].isMine()) {
-                        if(item.oncemoreHave && !(item.oncemoreUsed)) { //지뢰가 아니어도 oncemore아이템 있으면 계속 자기 턴
-                            item.oncemoreUsed = true;
+                        if(gameManager.getItem().oncemoreHave && !(gameManager.getItem().oncemoreUsed)) { //지뢰가 아니어도 oncemore아이템 있으면 계속 자기 턴
+                            gameManager.getItem().oncemoreUsed = true;
                         } else { //지뢰가 아니면 Combo를 0으로 리셋하고 턴 종료
                             gameManager.setMyCombo(0);
                             gameManager.setMyTurn(false);
@@ -302,6 +330,11 @@ public class MainView extends View {
                     } else if(tile[i][j].isMine()){ //지뢰면 콤보 증가, 계속 자기 턴
                         gameManager.setMyTurn(true);
                     }
+                    //TextLCD 정보 업데이트
+                    secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
+                    retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
+                    //DotMatrix 정보 업데이트
+                    deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
                     break;
                 }
             }
@@ -316,6 +349,11 @@ public class MainView extends View {
             mVibrator.vibrate(10 * gameManager.getMyCombo());
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
             gameManager.setFindMine(gameManager.getFindMine() + 1);
+            segData = gameManager.getLeftMine() * 10000;
+            if(gameManager.getFindMine() > gameManager.getFindOtherMine()) segData += 100;
+            else segData += 200;
+            segData += gameManager.getFindMine();
+            deviceService.SegmentControl(segData);
         } else if (tile[i][j].getNumber() == 0) {
             gameManager.getQueueTile()[queueCounter][1] = i;
             gameManager.getQueueTile()[queueCounter][2] = j;
@@ -323,28 +361,7 @@ public class MainView extends View {
         }  //else if (tile[i][j].isItem() { 여기에 아이템 발견했을 시 활성화 시키는 함수 구현 }
     }
 
-    private void useItem(int index, float i, float j, int itemNum) {
-        //아이템 버튼을 눌렀을 때
-        if(itemNum == 1) { // preview
-            item.preview(index, i, j);
-        } else if(itemNum == 2) { // Once More
-            item.onceMore();
-            // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가
-        } else if (itemNum == 3) { //scoreChange
-            item.scoreChange();
-            int tmp;
-            tmp = gameManager.getFindMine();
-            gameManager.setFindMine(gameManager.getFindOtherMine());
-            gameManager.setFindOtherMine(tmp);
-            // 상대방에게 scoreChange 아이템 공격 보내기
-            // 만일 상대방이 defenseScoreChange()를 사용하면 무효화
-        } else if(itemNum == 4) { // timeAttack
-            item.timeAttack();
-            // 상대방에게 timeAttack 아이템 공격 보내기
-            // 제한 시간을 8초에서 4초로 변경
-            // 만일 상대방이 defenseTimeAttack()을 사용하면 무효화
-        }
-    }
+
 
 
     private int randomRange(int n1, int n2) {

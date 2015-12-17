@@ -12,6 +12,7 @@ public class DeviceService{
 
     public native int PiezoControl(int value);
     public native int FLEDControl(int led_num, String str);
+    public native int FLEDControl2(int led1, int led2, int led3);
     public native int DotMatrixControl(String data);
     public native int TextLCDOut(String str, String str2);
     public native int IOCtlClear();
@@ -54,5 +55,13 @@ public class DeviceService{
                     }
             }
         }
+    }
+
+    public void getAttack() {
+        FLEDControl2(255, 0, 0);
+    }
+
+    public void getDefense() {
+        FLEDControl2(0, 0, 255);
     }
 }

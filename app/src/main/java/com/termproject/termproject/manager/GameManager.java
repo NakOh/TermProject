@@ -1,11 +1,17 @@
 package com.termproject.termproject.manager;
 
+import android.content.Context;
+import android.os.Vibrator;
+
+import com.termproject.termproject.main.DeviceService;
+import com.termproject.termproject.model.Item;
 import com.termproject.termproject.model.Tile;
 
 /**
  * Created by kk070 on 2015-12-06.
  */
 public class GameManager {
+    private Item item;
     private static GameManager instance;
     private int difficulty;
     private int index;
@@ -25,6 +31,8 @@ public class GameManager {
     private int queueSearcher = -1;
     private int myCombo;
     private int otherCombo;
+    private Vibrator mVibrator;
+    private DeviceService deviceService;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -33,11 +41,27 @@ public class GameManager {
         return instance;
     }
 
+    public void makeVibrator(Context context) {
+        this.mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+    }
+
+    public Vibrator getVibrator(){
+        return this.mVibrator;
+    }
+
     public void checkUpdate(int i, int j){
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
+            setOtherCombo(getOtherCombo() + 1);
+            mVibrator.vibrate(10 * getOtherCombo());
            setFindOtherMine(getFindOtherMine() + 1);
+
+            int segData = getLeftMine() * 10000;
+            if(getFindMine() > getFindOtherMine()) segData += 100;
+            else segData += 200;
+            segData += getFindMine();
+            deviceService.SegmentControl(segData);
         } else if (tile[i][j].getNumber() == 0) {
             if(getQueueCounter() > 20){
                 setQueueCounter(0);
@@ -52,7 +76,7 @@ public class GameManager {
         }
     }
 
-    public void checkSide(int index) {
+    public void checkSide(int index) { //클릭한 타일이 0일 때 상하좌우를 확인해서 오픈
         int i, j;
         while (getQueueCounter() != getQueueSearcher()) {
             setQueueSearcher(getQueueSearcher() + 1);
@@ -95,6 +119,29 @@ public class GameManager {
                     getQueueTile()[getQueueCounter()][2] = j - 1;
                 }
             }
+        }
+    }
+
+    public void useItem(int index, float i, float j, int itemNum) {
+        //아이템 버튼을 눌렀을 때
+        if(itemNum == 1) { // preview
+            item.preview(index, i, j);
+        } else if(itemNum == 2) { // Once More
+            item.onceMore();
+            // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가
+        } else if (itemNum == 3) { //scoreChange
+            item.scoreChange();
+            int tmp;
+            tmp = getFindMine();
+            setFindMine(getFindOtherMine());
+            setFindOtherMine(tmp);
+            // 상대방에게 scoreChange 아이템 공격 보내기
+            // 만일 상대방이 defenseScoreChange()를 사용하면 무효화
+        } else if(itemNum == 4) { // timeAttack
+            item.timeAttack();
+            // 상대방에게 timeAttack 아이템 공격 보내기
+            // 제한 시간을 8초에서 4초로 변경
+            // 만일 상대방이 defenseTimeAttack()을 사용하면 무효화
         }
     }
 
@@ -244,5 +291,17 @@ public class GameManager {
 
     public int getOtherCombo() {
         return otherCombo;
+    }
+
+    public int getLeftMine() {
+        return totalMine - findMine - findOtherMine;
+    }
+
+    public Item getItem(){
+        return this.item;
+    }
+
+    public DeviceService getDeviceService() {
+        return this.deviceService;
     }
 }

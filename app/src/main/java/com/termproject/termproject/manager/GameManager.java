@@ -37,7 +37,13 @@ public class GameManager {
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
            setFindOtherMine(getFindOtherMine() + 1);
         } else if (tile[i][j].getNumber() == 0) {
-            setQueueCounter(getQueueCounter()+1);
+            if(getQueueCounter() > 20){
+                setQueueCounter(0);
+                setQueueSearcher(-1);
+            } else {
+                setQueueSearcher(getQueueCounter());
+                setQueueCounter(getQueueCounter()+1);
+            }
             getQueueTile()[getQueueCounter()][1] = i;
             getQueueTile()[getQueueCounter()][2] = j;
             checkSide(getIndex());

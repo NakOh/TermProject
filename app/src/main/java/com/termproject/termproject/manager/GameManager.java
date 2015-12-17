@@ -37,6 +37,7 @@ public class GameManager {
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
            setFindOtherMine(getFindOtherMine() + 1);
         } else if (tile[i][j].getNumber() == 0) {
+            setQueueCounter(getQueueCounter()+1);
             getQueueTile()[getQueueCounter()][1] = i;
             getQueueTile()[getQueueCounter()][2] = j;
             checkSide(getIndex());
@@ -47,12 +48,14 @@ public class GameManager {
         int i, j;
         while (getQueueCounter() != getQueueSearcher()) {
             setQueueSearcher(getQueueSearcher() + 1);
+            if(getQueueSearcher() > 20) setQueueSearcher(0);
             i = getQueueTile()[getQueueSearcher()][1];
             j = getQueueTile()[getQueueSearcher()][2];
             if (i + 1 < index - 1 && !(tile[i + 1][j].isShow()) && !(tile[i + 1][j].isMine())) {
                 tile[i + 1][j].setIsShow(true);
                 if (tile[i + 1][j].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
+                    if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i + 1;
                     getQueueTile()[getQueueCounter()][2] = j;
                 }
@@ -61,6 +64,7 @@ public class GameManager {
                 tile[i][j + 1].setIsShow(true);
                 if (tile[i][j + 1].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
+                    if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i;
                     getQueueTile()[getQueueCounter()][2] = j + 1;
                 }
@@ -69,6 +73,7 @@ public class GameManager {
                 tile[i - 1][j].setIsShow(true);
                 if (tile[i - 1][j].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
+                    if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i - 1;
                     getQueueTile()[getQueueCounter()][2] = j;
                 }
@@ -77,6 +82,7 @@ public class GameManager {
                 tile[i][j - 1].setIsShow(true);
                 if (tile[i][j - 1].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
+                    if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i;
                     getQueueTile()[getQueueCounter()][2] = j - 1;
                 }

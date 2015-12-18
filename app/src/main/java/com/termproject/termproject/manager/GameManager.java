@@ -1,6 +1,5 @@
 package com.termproject.termproject.manager;
 
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.os.Vibrator;
 
@@ -11,8 +10,7 @@ import com.termproject.termproject.model.Tile;
 /**
  * Created by kk070 on 2015-12-06.
  */
-public class GameManager extends DeviceService{
-    private Item item;
+public class GameManager {
     private static GameManager instance;
     private TCPManager tcpManager;
     private int difficulty;
@@ -33,7 +31,7 @@ public class GameManager extends DeviceService{
     private int[][] queueTile;
     private int queueCounter = 0;
     private int queueSearcher = -1;
-
+    private Item item;
     private int defenseScoreNumber;
     private int defenseTimeNumber;
     private int onceMoreNumber;
@@ -42,7 +40,7 @@ public class GameManager extends DeviceService{
     private int timeAttackNumber;
 
     private Vibrator mVibrator;
-    //private DeviceService deviceService;
+    private DeviceService deviceService;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -78,7 +76,7 @@ public class GameManager extends DeviceService{
             else segData += 200;
             segData += getFindMine();
             //deviceService.SegmentControl(segData);
-            SegmentControl(segData);
+            //SegmentControl(segData);
         } else if (tile[i][j].getNumber() == 0) {
             if(getQueueCounter() > 20){
                 setQueueCounter(0);
@@ -150,33 +148,41 @@ public class GameManager extends DeviceService{
 
     private GameManager() {
         tcpManager = TCPManager.getInstance();
-        //deviceService = new DeviceService();
+        deviceService = new DeviceService();
+        item = new Item();
     }
 
-    /*
-    public void useItem(int index, float i, float j, int itemNum) {
-        //아이템 버튼을 눌렀을 때
-        if(itemNum == 1) { // preview
-            item.preview(index, i, j);
-        } else if(itemNum == 2) { // Once More
-            item.onceMore();
-            // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가
-        } else if (itemNum == 3) { //scoreChange
-            item.scoreChange();
-            int tmp;
-            tmp = getFindMine();
-            setFindMine(getFindOtherMine());
-            setFindOtherMine(tmp);
-            // 상대방에게 scoreChange 아이템 공격 보내기
-            // 만일 상대방이 defenseScoreChange()를 사용하면 무효화
-        } else if(itemNum == 4) { // timeAttack
-            item.timeAttack();
-            // 상대방에게 timeAttack 아이템 공격 보내기
-            // 제한 시간을 8초에서 4초로 변경
-            // 만일 상대방이 defenseTimeAttack()을 사용하면 무효화
-        }
+    public void defenseTime(){
+        item.defenceScoreChange();
     }
-    */
+
+    public void defenseScore(){
+        item.defenceTimeAttack();
+    }
+
+    public void preview(){
+       // item.preview(index, i, j);
+    }
+    public void onceMore(){
+        item.onceMore();
+        // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가
+    }
+    public void scoreChange(){
+        item.scoreChange();
+        int tmp;
+        tmp = getFindMine();
+        setFindMine(getFindOtherMine());
+        setFindOtherMine(tmp);
+        // 상대방에게 scoreChange 아이템 공격 보내기
+        // 만일 상대방이 defenseScoreChange()를 사용하면 무효화
+    }
+
+    public void timeAttack(){
+        item.timeAttack();
+        // 상대방에게 timeAttack 아이템 공격 보내기
+        // 제한 시간을 8초에서 4초로 변경
+        // 만일 상대방이 defenseTimeAttack()을 사용하면 무효화
+    }
 
     public int getDifficulty() {
         return difficulty;
@@ -374,9 +380,6 @@ public class GameManager extends DeviceService{
         return totalMine - findMine - findOtherMine;
     }
 
-    public Item getItem(){
-        return this.item;
-    }
 
     //public DeviceService getDeviceService() {
         //return this.deviceService;

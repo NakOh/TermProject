@@ -21,34 +21,50 @@ public class Tile {
     private int y;
     private int w;
     private int h;
-    private int[] resource = {R.drawable.number0,R.drawable.number1,R.drawable.number2,R.drawable.number3,R.drawable.number4,R.drawable.number5,R.drawable.number6,R.drawable.number7,R.drawable.number8};
+    private int index;
+    private int[] resource = {R.drawable.number0, R.drawable.number1, R.drawable.number2, R.drawable.number3, R.drawable.number4, R.drawable.number5, R.drawable.number6, R.drawable.number7, R.drawable.number8};
 
-
-    public Tile(Context context){
+    public Tile(Context context) {
         defaultTile = BitmapFactory.decodeResource(context.getResources(), R.drawable.tile);
     }
-    public void setImage(Context context){
-        if(isMine){
+
+    public void setImage(Context context) {
+        if (isMine) {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.mine);
-        }else{
+        } else if (isItem) {
+            setIndex(randomRange(1, 6));
+            if (getIndex() == 1) {
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_change);
+            } else if (getIndex() == 2) {
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_time);
+            } else if (getIndex() == 3) {
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.onemore);
+            } else if (getIndex() == 4) {
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.glass);
+            } else if (getIndex() == 5) {
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.change);
+            } else if (getIndex() == 6) {
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.time);
+            }
+        } else {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), resource[number]);
         }
     }
 
-    public void setSize(int w, int h){
+    public void setSize(int w, int h) {
         this.setW(w);
         this.setH(h);
         tileBitmap = Bitmap.createScaledBitmap(tileBitmap, w, h, true);
         defaultTile = Bitmap.createScaledBitmap(defaultTile, w, h, true);
     }
 
-    public void update(Canvas canvas, int x, int y){
+    public void update(Canvas canvas, int x, int y) {
         this.setX(x);
         this.setY(y);
         //원래는 default 이미지가 보이다가 눌렸을 경우 자신의 BItmap을 보여줘야하는데, 작동을 하지 않아 일단 주석처리해둠
-        if(isShow) {
+        if (isShow) {
             canvas.drawBitmap(tileBitmap, x, y, null);
-        }else{
+        } else {
             canvas.drawBitmap(defaultTile, x, y, null);
         }
     }
@@ -115,5 +131,19 @@ public class Tile {
 
     public void setIsItem(boolean isItem) {
         this.isItem = isItem;
+    }
+
+    private int randomRange(int n1, int n2) {
+        return (int) (Math.random() * (n2 - n1 + 1)) + n1;
+    }
+
+
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

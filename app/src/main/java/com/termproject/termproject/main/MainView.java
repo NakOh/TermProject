@@ -81,14 +81,14 @@ public class MainView extends View {
         deviceService.IOCtlBlink(false);
         deviceService.SegmentIOControl(0);
         */
-
+        /*
         gameManager.IOCtlClear();
         gameManager.IOCtlReturnHome();
         gameManager.IOCtlDisplay(true);
         gameManager.IOCtlCursor(false);
         gameManager.IOCtlBlink(false);
         gameManager.SegmentIOControl(0);
-
+        */
         this.difficulty = gameManager.getDifficulty();
         gameManager.setMyThread(myThread);
 

@@ -16,6 +16,7 @@ public class Tile {
     private int number;
     private boolean isMine = false;
     private boolean isShow = false;
+    private boolean isItem = false;
     private int x;
     private int y;
     private int w;
@@ -106,5 +107,13 @@ public class Tile {
 
     public void setH(int h) {
         this.h = h;
+    }
+
+    public boolean isItem() {
+        return isItem;
+    }
+
+    public void setIsItem(boolean isItem) {
+        this.isItem = isItem;
     }
 }

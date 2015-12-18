@@ -7,11 +7,14 @@ import com.termproject.termproject.model.Tile;
  */
 public class GameManager {
     private static GameManager instance;
+    private TCPManager tcpManager;
     private int difficulty;
     private int index;
     private int findMine;
     private int findOtherMine;
     private int totalMine = 0;
+    private int myCombo;
+    private int otherCombo;
     private boolean end = false;
     private boolean multi;
     private boolean server;
@@ -23,12 +26,27 @@ public class GameManager {
     private int[][] queueTile;
     private int queueCounter = 0;
     private int queueSearcher = -1;
+    
+    private int defenseScoreNumber;
+    private int defenseTimeNumber;
+    private int onceMoreNumber;
+    private int previewNumber;
+    private int scoreChangeNumber;
+    private int timeAttackNumber;
+
+
 
     public static GameManager getInstance(){
         if(instance == null){
             instance  = new GameManager();
         }
         return instance;
+    }
+
+    public void attack(){
+        //3번 연속으로 찾으면
+        if(getOtherCombo() >= 3){
+        }
     }
 
     public void checkUpdate(int i, int j){
@@ -84,8 +102,17 @@ public class GameManager {
         }
     }
 
-    private GameManager(){
+    public void sendMessage(String message) {
+        setWait(true);
+        tcpManager.sendMessage(message);
+        while (true) {
+            if (isWait())
+                break;
+        }
+    }
 
+    private GameManager(){
+        tcpManager = TCPManager.getInstance();
     }
 
     public int getDifficulty() {
@@ -214,5 +241,69 @@ public class GameManager {
 
     public void setFindOtherMine(int findOtherMine) {
         this.findOtherMine = findOtherMine;
+    }
+
+    public int getMyCombo() {
+        return myCombo;
+    }
+
+    public void setMyCombo(int myCombo) {
+        this.myCombo = myCombo;
+    }
+
+    public int getOtherCombo() {
+        return otherCombo;
+    }
+
+    public void setOtherCombo(int otherCombo) {
+        this.otherCombo = otherCombo;
+    }
+
+    public int getDefenseScoreNumber() {
+        return defenseScoreNumber;
+    }
+
+    public void setDefenseScoreNumber(int defenseScoreNumber) {
+        this.defenseScoreNumber = defenseScoreNumber;
+    }
+
+    public int getDefenseTimeNumber() {
+        return defenseTimeNumber;
+    }
+
+    public void setDefenseTimeNumber(int defenseTimeNumber) {
+        this.defenseTimeNumber = defenseTimeNumber;
+    }
+
+    public int getOnceMoreNumber() {
+        return onceMoreNumber;
+    }
+
+    public void setOnceMoreNumber(int onceMoreNumber) {
+        this.onceMoreNumber = onceMoreNumber;
+    }
+
+    public int getPreviewNumber() {
+        return previewNumber;
+    }
+
+    public void setPreviewNumber(int previewNumber) {
+        this.previewNumber = previewNumber;
+    }
+
+    public int getScoreChangeNumber() {
+        return scoreChangeNumber;
+    }
+
+    public void setScoreChangeNumber(int scoreChangeNumber) {
+        this.scoreChangeNumber = scoreChangeNumber;
+    }
+
+    public int getTimeAttackNumber() {
+        return timeAttackNumber;
+    }
+
+    public void setTimeAttackNumber(int timeAttackNumber) {
+        this.timeAttackNumber = timeAttackNumber;
     }
 }

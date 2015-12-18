@@ -41,10 +41,6 @@ public class TCPManager {
     private Thread connect;
     private Thread recvSocket;
     private Thread checkMessage;
-    private final static int mask = 2;
-    private final static int easy = 5 + mask;
-    private final static int normal = 7 + mask;
-    private final static int hard = 10 + mask;
 
     private String map = "";
 
@@ -213,14 +209,16 @@ public class TCPManager {
                 case "end":
                     end();
                     break;
-
                 case "wantDifficulty":
                     sendMessage("giveDifficulty,"+gameManager.getDifficulty());
                     break;
-
                 case "giveDifficulty":
                     gameManager.setDifficulty(Integer.valueOf(result[1]));
                     gameManager.setWait(false);
+                    break;
+                case "combo" :
+                    gameManager.setOtherCombo(Integer.valueOf(result[1]));
+                    gameManager.attack();
                     break;
                 default:
                     Log.d("checkMessage", result[0]);

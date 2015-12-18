@@ -2,13 +2,18 @@ package com.termproject.termproject.main;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.termproject.termproject.R;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
@@ -36,28 +41,40 @@ public class MainView extends View {
     private Thread myThread;
     private int counter = 0;
     private int queueCounter = 0;
-    private int queueSearcher = -1;
-
-    public int myCombo = 0;
-    public int countDown = 0;
-    public int flag = 100;
-
     public int foundMine = 0;
+    private Vibrator mVibrator;
 
-    Vibrator mVibrator;
+
+    private Bitmap change;
+    private Bitmap anti_change;
+    private Bitmap time;
+    private Bitmap anti_time;
+    private Bitmap glass;
+    private Bitmap onemore;
+
 
     public MainView(Context context) {
         super(context);
         this.mContext = context;
+
+        change = BitmapFactory.decodeResource(context.getResources(), R.drawable.change);
+        anti_change = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_change);
+        time = BitmapFactory.decodeResource(context.getResources(), R.drawable.time);
+        anti_time = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_time);
+        glass = BitmapFactory.decodeResource(context.getResources(), R.drawable.glass);
+        onemore = BitmapFactory.decodeResource(context.getResources(), R.drawable.onemore);
+
+
         myThread = Thread.currentThread();
         gameManager = GameManager.getInstance();
         tcpManager = TCPManager.getInstance();
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         gameManager.setMyThread(myThread);
 
+
         if (!gameManager.isServer() && gameManager.isMulti()) {
             //클라면 서버의 난이도를 받아온다.
-            sendMessage("wantDifficulty");
+            gameManager.sendMessage("wantDifficulty");
         }
 
         if (gameManager.getDifficulty() == 0) {
@@ -86,6 +103,27 @@ public class MainView extends View {
     protected void onDraw(Canvas canvas) {
         this.canvas = canvas;
         updateTile(gameManager.getIndex(), canvas);
+        canvas.drawBitmap(change, 0, 3 * h / 4, null);
+        canvas.drawBitmap(anti_change, w / 6, 3 * h / 4, null);
+        canvas.drawBitmap(time, (2 * w / 6), 3 * h / 4, null);
+        canvas.drawBitmap(anti_time, (3 * w / 6), 3 * h / 4, null);
+        canvas.drawBitmap(glass, (4 * w / 6), 3 * h / 4, null);
+        canvas.drawBitmap(onemore, (5 * w / 6), 3 * h / 4, null);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.BLACK);
+
+        paint.setTextSize(30);
+
+        canvas.drawText(String.valueOf(gameManager.getScoreChangeNumber()), 0 + w / 12, h - 0, paint);
+        canvas.drawText(String.valueOf(gameManager.getDefenseScoreNumber()), w / 6 + w / 12, h - 0, paint);
+        canvas.drawText(String.valueOf(gameManager.getTimeAttackNumber()), (2 * w / 6) + w / 12, h - 0, paint);
+        canvas.drawText(String.valueOf(gameManager.getDefenseTimeNumber()), (3 * w / 6) + w / 12, h - 0, paint);
+        canvas.drawText(String.valueOf(gameManager.getPreviewNumber()), (4 * w / 6) + w / 12, h - 0, paint);
+        canvas.drawText(String.valueOf(gameManager.getOnceMoreNumber()), (5 * w / 6) + w / 12, h - 0, paint);
+
         queueTile = new int[20][3];
         gameManager.setQueueTile(queueTile);
         invalidate();
@@ -96,6 +134,12 @@ public class MainView extends View {
         this.w = w;
         this.h = h;
         setTileSize(gameManager.getIndex());
+        change = Bitmap.createScaledBitmap(change, w / 6, h / 4 - 60, true);
+        anti_change = Bitmap.createScaledBitmap(anti_change, w / 6, h / 4 - 60, true);
+        time = Bitmap.createScaledBitmap(time, w / 6, h / 4 - 60, true);
+        anti_time = Bitmap.createScaledBitmap(anti_time, w / 6, h / 4 - 60, true);
+        glass = Bitmap.createScaledBitmap(glass, w / 6, h / 4 - 60, true);
+        onemore = Bitmap.createScaledBitmap(onemore, w / 6, h / 4 - 60, true);
     }
 
     @Override
@@ -153,7 +197,10 @@ public class MainView extends View {
                 if (randomRange(1, 4) == 1) {
                     tile[i][j].setIsMine(true);
                     gameManager.setTotalMine(gameManager.getTotalMine() + 1);
+                } else if (randomRange(1, 6) == 1) {
+                    tile[i][j].setIsItem(true);
                 }
+
             }
         }
     }
@@ -210,7 +257,7 @@ public class MainView extends View {
                     continue;
                 }
                 //이미지 타일 이미지 크기를 결정한다.
-                tile[i][j].setSize(w / (index - mask), h / (index - mask));
+                tile[i][j].setSize(w / (index - mask), (3 * h / 4) / (index - mask));
             }
         }
     }
@@ -218,7 +265,7 @@ public class MainView extends View {
     private void setTileAgain(int index) {
         //클라이언트일 경우
         //서버로 맵 정보를 요구하자
-        sendMessage("wantMap");
+        gameManager.sendMessage("wantMap");
         setNumber(index);
         setTileImage(index);
         setMineNumber(index);
@@ -241,7 +288,7 @@ public class MainView extends View {
                     continue;
                 }
                 //이미지 위치를 지정한다. 테스트 해본 뒤 조정할 예정
-                tile[i][j].update(canvas, w / (index - mask) * i - w / (index - mask), h / (index - mask) * j - h / (index - mask));
+                tile[i][j].update(canvas, w / (index - mask) * i - w / (index - mask), (3 * h / 4) / (index - mask) * j - (3 * h / 4) / (index - mask));
             }
         }
     }
@@ -274,7 +321,10 @@ public class MainView extends View {
                 tcpManager.sendMessage("noTouch," + i + "," + j);
             }
             mVibrator.vibrate(10);
-            //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
+            gameManager.setMyCombo(gameManager.getMyCombo() + 1);
+            if (gameManager.isMulti()) {
+                tcpManager.sendMessage("combo" + gameManager.getMyCombo());
+            }
             gameManager.setFindMine(gameManager.getFindMine() + 1);
             foundMine = gameManager.getFindMine();
         } else if (tile[i][j].getNumber() == 0) {
@@ -284,23 +334,23 @@ public class MainView extends View {
             gameManager.getQueueTile()[queueCounter][1] = i;
             gameManager.getQueueTile()[queueCounter][2] = j;
             gameManager.checkSide(index);
+            gameManager.setMyCombo(0);
+            if (gameManager.isMulti()) {
+                tcpManager.sendMessage("combo" + gameManager.getMyCombo());
+            }
             gameManager.setMyTurn(false);
         } else {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("touch," + i + "," + j);
             }
+            gameManager.setMyCombo(0);
+            if (gameManager.isMulti()) {
+                tcpManager.sendMessage("combo" + gameManager.getMyCombo());
+            }
             gameManager.setMyTurn(false);
         }
     }
 
-    private void sendMessage(String message) {
-        gameManager.setWait(true);
-        tcpManager.sendMessage(message);
-        while (true) {
-            if (!gameManager.isWait())
-                break;
-        }
-    }
 
     private int randomRange(int n1, int n2) {
         return (int) (Math.random() * (n2 - n1 + 1)) + n1;

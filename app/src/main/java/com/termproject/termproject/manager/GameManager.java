@@ -32,6 +32,7 @@ public class GameManager {
     private int queueCounter = 0;
     private int queueSearcher = -1;
     private Item item;
+
     private int defenseScoreNumber = 0;
     private int defenseTimeNumber = 0;
     private int onceMoreNumber = 0;
@@ -246,7 +247,6 @@ public class GameManager {
         item.preview();
         //preview 사용 시 다음 클릭한 타일과 상하좌우 타일을 3초동안 보여줌
     }
-
     public void onceMore(){
         item.onceMore();
         // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가

@@ -90,6 +90,8 @@ public class MainView extends View {
         this.difficulty = gameManager.getDifficulty();
         gameManager.setMyThread(myThread);
 
+        //시작할 때 데이터 초기화
+        gameManager.resetScore();
 
         if (!gameManager.isServer() && gameManager.isMulti()) {
             //클라면 서버의 난이도를 받아온다.
@@ -268,6 +270,7 @@ public class MainView extends View {
                 }
                 //주변의 Mine 갯수를 새서 입력한다.
                 tile[i][j].setNumber(counter);
+                if(tile[i][j].isItem()) tile[i][j].setNumber(10 + tile[i][j].getIndex());
             }
         }
     }

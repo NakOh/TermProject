@@ -32,12 +32,12 @@ public class GameManager {
     private int queueCounter = 0;
     private int queueSearcher = -1;
     private Item item;
-    private int defenseScoreNumber;
-    private int defenseTimeNumber;
-    private int onceMoreNumber;
-    private int previewNumber;
-    private int scoreChangeNumber;
-    private int timeAttackNumber;
+    private int defenseScoreNumber = 0;
+    private int defenseTimeNumber = 0;
+    private int onceMoreNumber = 0;
+    private int previewNumber = 0;
+    private int scoreChangeNumber = 0;
+    private int timeAttackNumber = 0;
 
     private boolean previewActivated = false;
     private boolean onceMoreActivated = false;
@@ -51,6 +51,19 @@ public class GameManager {
             instance  = new GameManager();
         }
         return instance;
+    }
+
+    public void resetScore(){
+        this.defenseScoreNumber = 0;
+        this.defenseTimeNumber = 0;
+        this.onceMoreNumber = 0;
+        this.previewNumber = 0;
+        this.scoreChangeNumber = 0;
+        this.timeAttackNumber = 0;
+
+        this.findMine = 0;
+        this.findOtherMine = 0;
+        this.totalMine = 0;
     }
 
     public void attack() {
@@ -110,6 +123,20 @@ public class GameManager {
                     if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i + 1;
                     getQueueTile()[getQueueCounter()][2] = j;
+                } else if(tile[i + 1][j].isItem()) {
+                    if (tile[i + 1][j].getIndex() == 1) {
+                        setDefenseScoreNumber(getDefenseScoreNumber() + 1);
+                    } else if (tile[i + 1][j].getIndex() == 2) {
+                        setDefenseTimeNumber(getDefenseTimeNumber() + 1);
+                    } else if (tile[i + 1][j].getIndex() == 3) {
+                        setOnceMoreNumber(getOnceMoreNumber() + 1);
+                    } else if (tile[i + 1][j].getIndex() == 4) {
+                        setPreviewNumber(getPreviewNumber() + 1);
+                    } else if (tile[i + 1][j].getIndex() == 5) {
+                        setScoreChangeNumber(getScoreChangeNumber() + 1);
+                    } else if (tile[i + 1][j].getIndex() == 6) {
+                        setTimeAttackNumber(getTimeAttackNumber() + 1);
+                    }
                 }
             }
             if (j + 1 < index - 1 && !(tile[i][j + 1].isShow()) && !(tile[i][j + 1].isMine())) {
@@ -120,6 +147,20 @@ public class GameManager {
                     if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i;
                     getQueueTile()[getQueueCounter()][2] = j + 1;
+                } else if(tile[i][j + 1].isItem()) {
+                    if (tile[i][j + 1].getIndex() == 1) {
+                        setDefenseScoreNumber(getDefenseScoreNumber() + 1);
+                    } else if (tile[i][j + 1].getIndex() == 2) {
+                        setDefenseTimeNumber(getDefenseTimeNumber() + 1);
+                    } else if (tile[i][j + 1].getIndex() == 3) {
+                        setOnceMoreNumber(getOnceMoreNumber() + 1);
+                    } else if (tile[i][j + 1].getIndex() == 4) {
+                        setPreviewNumber(getPreviewNumber() + 1);
+                    } else if (tile[i][j + 1].getIndex() == 5) {
+                        setScoreChangeNumber(getScoreChangeNumber() + 1);
+                    } else if (tile[i][j + 1].getIndex() == 6) {
+                        setTimeAttackNumber(getTimeAttackNumber() + 1);
+                    }
                 }
             }
             if (i - 1 > 0 && !(tile[i - 1][j].isShow()) && !(tile[i - 1][j].isMine())) {
@@ -130,6 +171,20 @@ public class GameManager {
                     if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i - 1;
                     getQueueTile()[getQueueCounter()][2] = j;
+                } else if(tile[i - 1][j].isItem()) {
+                    if (tile[i - 1][j].getIndex() == 1) {
+                        setDefenseScoreNumber(getDefenseScoreNumber() + 1);
+                    } else if (tile[i - 1][j].getIndex() == 2) {
+                        setDefenseTimeNumber(getDefenseTimeNumber() + 1);
+                    } else if (tile[i - 1][j].getIndex() == 3) {
+                        setOnceMoreNumber(getOnceMoreNumber() + 1);
+                    } else if (tile[i - 1][j].getIndex() == 4) {
+                        setPreviewNumber(getPreviewNumber() + 1);
+                    } else if (tile[i - 1][j].getIndex() == 5) {
+                        setScoreChangeNumber(getScoreChangeNumber() + 1);
+                    } else if (tile[i - 1][j].getIndex() == 6) {
+                        setTimeAttackNumber(getTimeAttackNumber() + 1);
+                    }
                 }
             }
             if (j - 1 > 0 && !(tile[i][j - 1].isShow()) && !(tile[i][j - 1].isMine())) {
@@ -140,6 +195,20 @@ public class GameManager {
                     if(getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i;
                     getQueueTile()[getQueueCounter()][2] = j - 1;
+                } else if(tile[i][j - 1].isItem()) {
+                    if (tile[i][j - 1].getIndex() == 1) {
+                        setDefenseScoreNumber(getDefenseScoreNumber() + 1);
+                    } else if (tile[i][j - 1].getIndex() == 2) {
+                        setDefenseTimeNumber(getDefenseTimeNumber() + 1);
+                    } else if (tile[i][j - 1].getIndex() == 3) {
+                        setOnceMoreNumber(getOnceMoreNumber() + 1);
+                    } else if (tile[i][j - 1].getIndex() == 4) {
+                        setPreviewNumber(getPreviewNumber() + 1);
+                    } else if (tile[i][j - 1].getIndex() == 5) {
+                        setScoreChangeNumber(getScoreChangeNumber() + 1);
+                    } else if (tile[i][j - 1].getIndex() == 6) {
+                        setTimeAttackNumber(getTimeAttackNumber() + 1);
+                    }
                 }
             }
         }

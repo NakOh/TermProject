@@ -28,6 +28,9 @@ public class Tile {
 
     public Tile(Context context) {
         defaultTile = BitmapFactory.decodeResource(context.getResources(), R.drawable.tile);
+        for(int i = 0; i < 7; i++){
+            itemCounter[i] = 0;
+        }
     }
 
     public void setImage(Context context) {

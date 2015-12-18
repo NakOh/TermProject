@@ -17,38 +17,41 @@ public class Tile {
     private boolean isMine = false;
     private boolean isShow = false;
     private boolean isItem = false;
+    private Items item;
     private int x;
     private int y;
     private int w;
     private int h;
-    private int[] resource = {R.drawable.number0,R.drawable.number1,R.drawable.number2,R.drawable.number3,R.drawable.number4,R.drawable.number5,R.drawable.number6,R.drawable.number7,R.drawable.number8};
+    private int[] resource = {R.drawable.number0, R.drawable.number1, R.drawable.number2, R.drawable.number3, R.drawable.number4, R.drawable.number5, R.drawable.number6, R.drawable.number7, R.drawable.number8};
 
-
-    public Tile(Context context){
+    public Tile(Context context) {
         defaultTile = BitmapFactory.decodeResource(context.getResources(), R.drawable.tile);
     }
-    public void setImage(Context context){
-        if(isMine){
+
+    public void setImage(Context context) {
+        if (isMine) {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.mine);
-        }else{
+        } else if (isItem) {
+            
+        } else {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), resource[number]);
         }
     }
 
-    public void setSize(int w, int h){
+    public void setSize(int w, int h) {
         this.setW(w);
         this.setH(h);
         tileBitmap = Bitmap.createScaledBitmap(tileBitmap, w, h, true);
         defaultTile = Bitmap.createScaledBitmap(defaultTile, w, h, true);
     }
 
-    public void update(Canvas canvas, int x, int y){
+    public void update(Canvas canvas, int x, int y) {
         this.setX(x);
         this.setY(y);
         //원래는 default 이미지가 보이다가 눌렸을 경우 자신의 BItmap을 보여줘야하는데, 작동을 하지 않아 일단 주석처리해둠
-        if(isShow) {
+        if (isShow) {
             canvas.drawBitmap(tileBitmap, x, y, null);
-        }else{
+        } else {
             canvas.drawBitmap(defaultTile, x, y, null);
         }
     }

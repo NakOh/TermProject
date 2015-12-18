@@ -110,19 +110,19 @@ public class MainView extends View {
 
         this.setFocusableInTouchMode(true);
 
-        if(!gameManager.isMulti()){
+        if (!gameManager.isMulti()) {
             firstLine = "single Play";
-        } else if(gameManager.isMulti() && gameManager.isServer()){
+        } else if (gameManager.isMulti() && gameManager.isServer()) {
             firstLine = "I'm Server";
-        } else if(gameManager.isMulti() && !gameManager.isServer()){
+        } else if (gameManager.isMulti() && !gameManager.isServer()) {
             firstLine = "I'm Client";
         }
 
-       // secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
-       // retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
-      //  deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
-      //  segData = gameManager.getTotalMine() * 10000;
-     //   deviceService.SegmentControl(segData);
+        // secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
+        // retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
+        //  deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
+        //  segData = gameManager.getTotalMine() * 10000;
+        //   deviceService.SegmentControl(segData);
 
     }
 
@@ -239,7 +239,7 @@ public class MainView extends View {
                 tcpManager.sendMessage("end");
             }
             //if(gameManager.getFindMine() > gameManager.getFindOtherMine()) deviceService.DotMatrixControl("WIN");
-          //  else deviceService.DotMatrixControl("LOSE");
+            //  else deviceService.DotMatrixControl("LOSE");
             Log.d("GameView", "GameEnd");
             ((MainActivity) mContext).dialogSimple();
         }
@@ -326,7 +326,7 @@ public class MainView extends View {
         gameManager.setQueueCounter(0);
         gameManager.setQueueSearcher(-1);
 
-        for(int i = 1; i < 7; i++) {
+        for (int i = 1; i < 7; i++) {
             // 아이템을 클릭했을 때 작동
             //
         }
@@ -360,11 +360,14 @@ public class MainView extends View {
                 tcpManager.sendMessage("combo" + gameManager.getMyCombo());
             }
             gameManager.setFindMine(gameManager.getFindMine() + 1);
-       //     segData = gameManager.getLeftMine() * 10000;
-      //      if(gameManager.getFindMine() > gameManager.getFindOtherMine()) segData += 100;
-       //     else segData += 200;
-        //    segData += gameManager.getFindMine();
-       //     deviceService.SegmentControl(segData);
+            //     segData = gameManager.getLeftMine() * 10000;
+            //      if(gameManager.getFindMine() > gameManager.getFindOtherMine()) segData += 100;
+            //     else segData += 200;
+            //    segData += gameManager.getFindMine();
+            //     deviceService.SegmentControl(segData);
+        } else if (tile[i][j].isItem()) {
+
+
         } else if (tile[i][j].getNumber() == 0) {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("touch," + i + "," + j);
@@ -388,13 +391,11 @@ public class MainView extends View {
             gameManager.setMyTurn(false);
         }
         //TextLCD 정보 업데이트
-    //    secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
-    //    retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
+        //    secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
+        //    retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
         //DotMatrix 정보 업데이트
-   //     deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
+        //     deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
     }
-
-
 
 
     private int randomRange(int n1, int n2) {

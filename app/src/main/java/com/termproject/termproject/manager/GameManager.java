@@ -104,6 +104,7 @@ public class GameManager {
             j = getQueueTile()[getQueueSearcher()][2];
             if (i + 1 < index - 1 && !(tile[i + 1][j].isShow()) && !(tile[i + 1][j].isMine())) {
                 tile[i + 1][j].setIsShow(true);
+                tile[i + 1][j].setIsClicked();
                 if (tile[i + 1][j].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
                     if(getQueueCounter() > 20) setQueueCounter(0);
@@ -113,6 +114,7 @@ public class GameManager {
             }
             if (j + 1 < index - 1 && !(tile[i][j + 1].isShow()) && !(tile[i][j + 1].isMine())) {
                 tile[i][j + 1].setIsShow(true);
+                tile[i][j + 1].setIsClicked();
                 if (tile[i][j + 1].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
                     if(getQueueCounter() > 20) setQueueCounter(0);
@@ -122,6 +124,7 @@ public class GameManager {
             }
             if (i - 1 > 0 && !(tile[i - 1][j].isShow()) && !(tile[i - 1][j].isMine())) {
                 tile[i - 1][j].setIsShow(true);
+                tile[i - 1][j].setIsClicked();
                 if (tile[i - 1][j].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
                     if(getQueueCounter() > 20) setQueueCounter(0);
@@ -131,6 +134,7 @@ public class GameManager {
             }
             if (j - 1 > 0 && !(tile[i][j - 1].isShow()) && !(tile[i][j - 1].isMine())) {
                 tile[i][j - 1].setIsShow(true);
+                tile[i][j - 1].setIsClicked();
                 if (tile[i][j - 1].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
                     if(getQueueCounter() > 20) setQueueCounter(0);
@@ -401,16 +405,16 @@ public class GameManager {
         return onceMoreActivated;
     }
 
-    public boolean getTimeAttackActivated() {
-        return timeAttackActivated;
-    }
-
     public void setPreviewActivated(boolean isActivated) {
         previewActivated = isActivated;
     }
 
     public void setOnceMoreActivated(boolean isActivated) {
         onceMoreActivated = isActivated;
+    }
+
+    public boolean getTimeAttackActivated() {
+        return timeAttackActivated;
     }
 
     public void setTimeAttackActivated(boolean isActivated) {

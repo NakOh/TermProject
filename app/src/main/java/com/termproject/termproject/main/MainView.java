@@ -375,7 +375,9 @@ public class MainView extends View {
                         //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
                         //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
                         //여기에 로직 추가하면 됩니다.
-                        updateTouch(i, j, index);
+                        if(!tile[i][j].getIsClicked()) {
+                            updateTouch(i, j, index);
+                        }
                     }
                 }
             }
@@ -385,6 +387,7 @@ public class MainView extends View {
     private void updateTouch(int i, int j, int index) {
         //나 자신이 눌렀을 때 (즉 내가 마인을 찾은거)
         tile[i][j].setIsShow(true);
+        tile[i][j].setIsClicked();
 
         if (tile[i][j].isMine()) {
             if (gameManager.isMulti()) {

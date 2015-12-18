@@ -17,6 +17,7 @@ public class Tile {
     private boolean isMine = false;
     private boolean isShow = false;
     private boolean isItem = false;
+    private boolean isClicked = false;
     private int x;
     private int y;
     private int w;
@@ -152,5 +153,13 @@ public class Tile {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public void setIsClicked() {
+        this.isClicked = true;
+    }
+
+    public boolean getIsClicked() {
+        return isClicked;
     }
 }

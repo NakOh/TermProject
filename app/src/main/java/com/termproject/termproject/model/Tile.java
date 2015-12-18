@@ -23,6 +23,7 @@ public class Tile {
     private int h;
     private int index;
     private int[] resource = {R.drawable.number0, R.drawable.number1, R.drawable.number2, R.drawable.number3, R.drawable.number4, R.drawable.number5, R.drawable.number6, R.drawable.number7, R.drawable.number8};
+    private int[] itemCounter = {0, 0, 0, 0, 0, 0, 0};
 
     public Tile(Context context) {
         defaultTile = BitmapFactory.decodeResource(context.getResources(), R.drawable.tile);
@@ -33,18 +34,24 @@ public class Tile {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.mine);
         } else if (isItem) {
             setIndex(randomRange(1, 6));
-            if (getIndex() == 1) {
+            if (getIndex() == 1 && itemCounter[1] < 2) {
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_change);
-            } else if (getIndex() == 2) {
+                itemCounter[1]++;
+            } else if (getIndex() == 2 && itemCounter[2] < 2) {
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_time);
-            } else if (getIndex() == 3) {
+                itemCounter[2]++;
+            } else if (getIndex() == 3 && itemCounter[3] < 2) {
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.onemore);
-            } else if (getIndex() == 4) {
+                itemCounter[3]++;
+            } else if (getIndex() == 4 && itemCounter[4] < 2) {
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.glass);
-            } else if (getIndex() == 5) {
+                itemCounter[4]++;
+            } else if (getIndex() == 5 && itemCounter[5] < 2) {
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.change);
-            } else if (getIndex() == 6) {
+                itemCounter[5]++;
+            } else if (getIndex() == 6 && itemCounter[6] < 2) {
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.time);
+                itemCounter[6]++;
             }
         } else {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), resource[number]);

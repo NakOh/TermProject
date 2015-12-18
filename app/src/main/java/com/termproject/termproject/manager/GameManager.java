@@ -68,7 +68,7 @@ public class GameManager {
         if (tile[i][j].isMine()) {
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
             setOtherCombo(getOtherCombo() + 1);
-            mVibrator.vibrate(10 * getOtherCombo());
+            mVibrator.vibrate(20 * getOtherCombo());
            setFindOtherMine(getFindOtherMine() + 1);
 
             int segData = getLeftMine() * 10000;

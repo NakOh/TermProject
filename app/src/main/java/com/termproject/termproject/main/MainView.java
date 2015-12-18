@@ -388,7 +388,7 @@ public class MainView extends View {
                 tcpManager.sendMessage("noTouch," + i + "," + j);
             }
             gameManager.setMyCombo(gameManager.getMyCombo() + 1);
-            mVibrator.vibrate(10 * gameManager.getMyCombo());
+            mVibrator.vibrate(20 * gameManager.getMyCombo());
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("combo" + gameManager.getMyCombo());
             }

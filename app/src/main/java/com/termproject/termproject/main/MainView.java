@@ -324,20 +324,37 @@ public class MainView extends View {
         gameManager.setQueueCounter(0);
         gameManager.setQueueSearcher(-1);
 
-        if(0+change.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+change.getHeight() > currentY){
-            gameManager.scoreChange();
-        }else if(0+time.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+time.getHeight() > currentY){
-            gameManager.timeAttack();
-        }else if(0+anti_time.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+anti_time.getHeight() > currentY){
-            gameManager.defenseTime(); //눌러서 작동하는건 아니다;
-        }else if(0+glass.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+glass.getHeight() > currentY){
-            gameManager.preview();
-        }else if(0+onemore.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+onemore.getHeight() > currentY){
-            gameManager.onceMore();
-        }else if(0+anti_change.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+anti_change.getHeight() > currentY){
-            gameManager.defenseScore(); //눌러서 작동하는건 아니다;
+        if (0 + change.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + change.getHeight() > currentY) {
+            if (gameManager.getScoreChangeNumber() > 0) {
+                gameManager.scoreChange();
+                gameManager.setScoreChangeNumber(gameManager.getScoreChangeNumber() - 1);
+            }
+        } else if (0 + time.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + time.getHeight() > currentY) {
+            if (gameManager.getTimeAttackNumber() > 0) {
+                gameManager.timeAttack();
+                gameManager.setTimeAttackNumber(gameManager.getTimeAttackNumber() - 1);
+            }
+        } else if (0 + anti_time.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + anti_time.getHeight() > currentY) {
+            if (gameManager.getDefenseTimeNumber() > 0) {
+                gameManager.defenseTime(); //눌러서 작동하는건 아니다;
+                gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() - 1);
+            }
+        } else if (0 + glass.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + glass.getHeight() > currentY) {
+            if (gameManager.getPreviewNumber() > 0) {
+                gameManager.preview();
+                gameManager.setPreviewNumber(gameManager.getPreviewNumber() - 1);
+            }
+        } else if (0 + onemore.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + onemore.getHeight() > currentY) {
+            if (gameManager.getOnceMoreNumber() > 0) {
+                gameManager.onceMore();
+                gameManager.setOnceMoreNumber(gameManager.getOnceMoreNumber() - 1);
+            }
+        } else if (0 + anti_change.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + anti_change.getHeight() > currentY) {
+            if(gameManager.getDefenseScoreNumber()>0) {
+                gameManager.defenseScore(); //눌러서 작동하는건 아니다;
+                gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber()-1);
+            }
         }
-
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
                 if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -375,17 +392,17 @@ public class MainView extends View {
             //     deviceService.SegmentControl(segData);
         } else if (tile[i][j].isItem()) {
             if (tile[i][j].getIndex() == 1) {
-                gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() +1);
+                gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() + 1);
             } else if (tile[i][j].getIndex() == 2) {
-                gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() +1);
+                gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() + 1);
             } else if (tile[i][j].getIndex() == 3) {
-                gameManager.setOnceMoreNumber(gameManager.getOnceMoreNumber() +1);
-            } else if (tile[i][j].getIndex()== 4) {
-                gameManager.setPreviewNumber(gameManager.getPreviewNumber()+1);
+                gameManager.setOnceMoreNumber(gameManager.getOnceMoreNumber() + 1);
+            } else if (tile[i][j].getIndex() == 4) {
+                gameManager.setPreviewNumber(gameManager.getPreviewNumber() + 1);
             } else if (tile[i][j].getIndex() == 5) {
-                gameManager.setScoreChangeNumber(gameManager.getScoreChangeNumber()+1);
+                gameManager.setScoreChangeNumber(gameManager.getScoreChangeNumber() + 1);
             } else if (tile[i][j].getIndex() == 6) {
-                gameManager.setTimeAttackNumber(gameManager.getTimeAttackNumber()+1);
+                gameManager.setTimeAttackNumber(gameManager.getTimeAttackNumber() + 1);
             }
 
             gameManager.setMyCombo(0);

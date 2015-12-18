@@ -1,25 +1,17 @@
 package com.termproject.termproject.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.termproject.termproject.R;
-import com.termproject.termproject.item.DefenceScoreChangeItem;
-import com.termproject.termproject.item.DefenceTimeAttackItem;
-import com.termproject.termproject.item.OnceMoreItem;
-import com.termproject.termproject.item.PreviewItem;
-import com.termproject.termproject.item.ScoreChangeItem;
-import com.termproject.termproject.item.TimeAttackItem;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
@@ -332,6 +324,20 @@ public class MainView extends View {
         gameManager.setQueueCounter(0);
         gameManager.setQueueSearcher(-1);
 
+        if(0+change.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+change.getHeight() > currentY){
+            gameManager.scoreChange();
+        }else if(0+time.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+time.getHeight() > currentY){
+            gameManager.timeAttack();
+        }else if(0+anti_time.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+anti_time.getHeight() > currentY){
+            gameManager.defenseTime(); //눌러서 작동하는건 아니다;
+        }else if(0+glass.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+glass.getHeight() > currentY){
+            gameManager.preview();
+        }else if(0+onemore.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+onemore.getHeight() > currentY){
+            gameManager.onceMore();
+        }else if(0+anti_change.getWidth()  > currentX && 0 < currentX && 3*h/4 < currentY && 3*h/4+anti_change.getHeight() > currentY){
+            gameManager.defenseScore(); //눌러서 작동하는건 아니다;
+        }
+
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
                 if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -389,7 +395,7 @@ public class MainView extends View {
             }
 
             gameManager.setMyTurn(false);
-            
+
         } else if (tile[i][j].getNumber() == 0) {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("touch," + i + "," + j);

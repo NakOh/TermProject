@@ -6,12 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
 import com.termproject.termproject.R;
-import com.termproject.termproject.item.DefenceScoreChangeItem;
-import com.termproject.termproject.item.DefenceTimeAttackItem;
-import com.termproject.termproject.item.OnceMoreItem;
-import com.termproject.termproject.item.PreviewItem;
-import com.termproject.termproject.item.ScoreChangeItem;
-import com.termproject.termproject.item.TimeAttackItem;
 
 /**
  * Created by kk070 on 2015-12-02.
@@ -23,7 +17,6 @@ public class Tile {
     private boolean isMine = false;
     private boolean isShow = false;
     private boolean isItem = false;
-    private Items item;
     private int x;
     private int y;
     private int w;
@@ -41,22 +34,16 @@ public class Tile {
         } else if (isItem) {
             setIndex(randomRange(1, 6));
             if (getIndex() == 1) {
-                setItem(new DefenceScoreChangeItem());
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_change);
             } else if (getIndex() == 2) {
-                setItem(new DefenceTimeAttackItem());
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_time);
             } else if (getIndex() == 3) {
-                setItem(new OnceMoreItem());
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.onemore);
             } else if (getIndex() == 4) {
-                setItem(new PreviewItem());
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.glass);
             } else if (getIndex() == 5) {
-                setItem(new ScoreChangeItem());
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.change);
             } else if (getIndex() == 6) {
-                setItem(new TimeAttackItem());
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.time);
             }
         } else {
@@ -150,13 +137,7 @@ public class Tile {
         return (int) (Math.random() * (n2 - n1 + 1)) + n1;
     }
 
-    public Items getItem() {
-        return item;
-    }
 
-    public void setItem(Items item) {
-        this.item = item;
-    }
 
     public int getIndex() {
         return index;

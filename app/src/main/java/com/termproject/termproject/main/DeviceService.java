@@ -59,10 +59,14 @@ public class DeviceService{
     }
 
     public void getAttack() {
-        FLEDControl2(255, 0, 0);
+        FLEDControl2(255, 0, 0); // red
     }
 
     public void getDefense() {
-        FLEDControl2(0, 0, 255);
+        FLEDControl2(0, 0, 255); // blue
+    }
+
+    public void getHelp() {
+        FLEDControl2(0, 255, 0); // green
     }
 }

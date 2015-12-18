@@ -350,11 +350,13 @@ public class MainView extends View {
         } else if (0 + glass.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + glass.getHeight() > currentY) {
             if (gameManager.getPreviewNumber() > 0) {
                 gameManager.preview();
+                gameManager.setPreviewActivated(true);
                 gameManager.setPreviewNumber(gameManager.getPreviewNumber() - 1);
             }
         } else if (0 + onemore.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + onemore.getHeight() > currentY) {
             if (gameManager.getOnceMoreNumber() > 0) {
                 gameManager.onceMore();
+                gameManager.setOnceMoreActivated(true);
                 gameManager.setOnceMoreNumber(gameManager.getOnceMoreNumber() - 1);
             }
         } else if (0 + anti_change.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + anti_change.getHeight() > currentY) {
@@ -362,18 +364,19 @@ public class MainView extends View {
                 gameManager.defenseScore(); //눌러서 작동하는건 아니다;
                 gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber()-1);
             }
-        }
-        for (int i = 0; i < index; i++) {
-            for (int j = 0; j < index; j++) {
-                if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
-                    continue;
-                }
-                //tile[i][j]의 안에 클릭했을 때 작동
-                if (tile[i][j].getX() + tile[i][j].getW() > currentX && tile[i][j].getX() < currentX && tile[i][j].getY() < currentY && tile[i][j].getY() + tile[i][j].getH() > currentY) {
-                    //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
-                    //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
-                    //여기에 로직 추가하면 됩니다.
-                    updateTouch(i, j, index);
+        } else {
+            for (int i = 0; i < index; i++) {
+                for (int j = 0; j < index; j++) {
+                    if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
+                        continue;
+                    }
+                    //tile[i][j]의 안에 클릭했을 때 작동
+                    if (tile[i][j].getX() + tile[i][j].getW() > currentX && tile[i][j].getX() < currentX && tile[i][j].getY() < currentY && tile[i][j].getY() + tile[i][j].getH() > currentY) {
+                        //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
+                        //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
+                        //여기에 로직 추가하면 됩니다.
+                        updateTouch(i, j, index);
+                    }
                 }
             }
         }
@@ -432,7 +435,9 @@ public class MainView extends View {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("combo" + gameManager.getMyCombo());
             }
-            gameManager.setMyTurn(false);
+            if(!gameManager.getOnceMoreActivated()) { // onceMore 쓰고있으면 그냥 진행
+                gameManager.setMyTurn(false);
+            }
         } else {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("touch," + i + "," + j);
@@ -441,7 +446,9 @@ public class MainView extends View {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("combo" + gameManager.getMyCombo());
             }
-            gameManager.setMyTurn(false);
+            if(!gameManager.getOnceMoreActivated()) { // onceMore 쓰고있으면 그냥 진행
+                gameManager.setMyTurn(false);
+            }
         }
         //TextLCD 정보 업데이트
         //    secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());

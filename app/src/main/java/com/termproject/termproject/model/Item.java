@@ -19,9 +19,10 @@ public class Item {
     public boolean timedefenseUsed = false;
     private Tile[][] tile;
 
-    public void preview(int index, float currentX, float currentY) {
+    //public void preview(int index, float currentX, float currentY) {
+    public boolean preview() {
         if(previewHave && !previewUsed){
-            for (int i = 0; i < index; i++) {
+            /*for (int i = 0; i < index; i++) {
                 for (int j = 0; j < index; j++) {
                     if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
                         continue;
@@ -43,9 +44,11 @@ public class Item {
                         if(j - 1 > 0 && tile[i][j-1].isShow()) tile[i][j-1].setIsShow(false);
                     }
                 }
-            }
+            }*/
             previewUsed = true;
+            return true;
         }
+        return false;
     }
 
     public boolean onceMore() {

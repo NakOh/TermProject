@@ -39,6 +39,10 @@ public class GameManager {
     private int scoreChangeNumber;
     private int timeAttackNumber;
 
+    private boolean previewActivated = false;
+    private boolean onceMoreActivated = false;
+    private boolean timeAttackActivated = false;
+
     private Vibrator mVibrator;
     private DeviceService deviceService;
 
@@ -153,16 +157,23 @@ public class GameManager {
     }
 
     public void defenseTime(){
-        item.defenceScoreChange();
+        item.defenceTimeAttack();
+        tcpManager.sendMessage("defenceTimeAttack");
+        //deviceService.getDefense();
     }
 
     public void defenseScore(){
-        item.defenceTimeAttack();
+        item.defenceScoreChange();
+        tcpManager.sendMessage("defenseScoreChange");
+        //deviceService.getDefense();
     }
 
     public void preview(){
-       // item.preview(index, i, j);
+       // item.preview(index, i, j);for (int i = 0; i < index; i++) {
+        item.preview();
+        //preview 사용 시 다음 클릭한 타일과 상하좌우 타일을 3초동안 보여줌
     }
+
     public void onceMore(){
         item.onceMore();
         // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가
@@ -173,12 +184,14 @@ public class GameManager {
         tmp = getFindMine();
         setFindMine(getFindOtherMine());
         setFindOtherMine(tmp);
+        tcpManager.sendMessage("scoreChange");
         // 상대방에게 scoreChange 아이템 공격 보내기
         // 만일 상대방이 defenseScoreChange()를 사용하면 무효화
     }
 
     public void timeAttack(){
         item.timeAttack();
+        tcpManager.sendMessage("timeAttack");
         // 상대방에게 timeAttack 아이템 공격 보내기
         // 제한 시간을 8초에서 4초로 변경
         // 만일 상대방이 defenseTimeAttack()을 사용하면 무효화
@@ -380,6 +393,29 @@ public class GameManager {
         return totalMine - findMine - findOtherMine;
     }
 
+    public boolean getPreviewActivated() {
+        return previewActivated;
+    }
+
+    public boolean getOnceMoreActivated() {
+        return onceMoreActivated;
+    }
+
+    public boolean getTimeAttackActivated() {
+        return timeAttackActivated;
+    }
+
+    public void setPreviewActivated(boolean isActivated) {
+        previewActivated = isActivated;
+    }
+
+    public void setOnceMoreActivated(boolean isActivated) {
+        onceMoreActivated = isActivated;
+    }
+
+    public void setTimeAttackActivated(boolean isActivated) {
+        timeAttackActivated = isActivated;
+    }
 
     //public DeviceService getDeviceService() {
         //return this.deviceService;

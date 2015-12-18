@@ -220,6 +220,35 @@ public class TCPManager {
                     gameManager.setOtherCombo(Integer.valueOf(result[1]));
                     gameManager.attack();
                     break;
+                case "scoreChange" :
+                    if(gameManager.getDefenseScoreNumber()>0) {
+                        sendMessage("defenseScoreChange");
+                        gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() - 1);
+                        //gameManager.deviceService.getDefense();
+                    } else {
+                        int tmp;
+                        tmp = gameManager.getFindMine();
+                        gameManager.setFindMine(gameManager.getFindOtherMine());
+                        gameManager.setFindOtherMine(tmp);
+                        //gameManager.deviceService.getAttack();
+                    }
+                    break;
+                case "defenseScoreChange" :
+                    //gameManager.deviceService.getDefense();
+                    break;
+                case "timeAttack" :
+                    if(gameManager.getDefenseTimeNumber() > 0) {
+                        sendMessage("defenseTimeAttack");
+                        gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() - 1);
+                        //gameManager.deviceService.getDefense();
+                    } else {
+                        gameManager.setTimeAttackActivated(true);
+                        //gameManager.deviceService.getAttack();
+                    }
+                    break;
+                case "defenseTimeAttack" :
+                    //gameManager.deviceService.getDefense();
+                    break;
                 default:
                     Log.d("checkMessage", result[0]);
                     break;

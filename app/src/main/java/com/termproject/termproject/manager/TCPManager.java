@@ -199,7 +199,7 @@ public class TCPManager {
                     for (int i = 1; i < result.length; i = i + 2) {
                         gameManager.checkUpdate(Integer.valueOf(result[i]), Integer.valueOf(result[i + 1]));
                     }
-                    gameManager.setMyTurn(true);
+                    //gameManager.setMyTurn(true);
                     break;
                 case "noTouch":
                     for (int i = 1; i < result.length; i = i + 2) {
@@ -219,6 +219,9 @@ public class TCPManager {
                 case "combo" :
                     gameManager.setOtherCombo(Integer.valueOf(result[1]));
                     gameManager.attack();
+                    break;
+                case "turnEnd" :
+                    gameManager.setMyTurn(true);
                     break;
                 case "scoreChange" :
                     if(gameManager.getDefenseScoreNumber()>0) {

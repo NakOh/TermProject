@@ -330,6 +330,7 @@ public class GameManager {
 
     public void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
+        if(!myTurn) tcpManager.sendMessage("turnEnd");
     }
 
     public boolean isWait() {

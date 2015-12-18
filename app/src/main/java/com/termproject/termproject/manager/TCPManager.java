@@ -205,6 +205,7 @@ public class TCPManager {
                     for (int i = 1; i < result.length; i = i + 2) {
                         gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
                     }
+                    gameManager.setWait(false);
                     break;
                 case "touch":
                     gameManager.setMyTurn(true);
@@ -212,8 +213,22 @@ public class TCPManager {
                         gameManager.checkUpdate(Integer.valueOf(result[i]), Integer.valueOf(result[i + 1]));
                     }
                     break;
+                case "Notouch":
+                    for (int i = 1; i < result.length; i = i + 2) {
+                        gameManager.checkUpdate(Integer.valueOf(result[i]), Integer.valueOf(result[i + 1]));
+                    }
+                    break;
                 case "end":
                     end();
+                    break;
+
+                case "wantDifficulty":
+                    sendMessage("giveDifficulty,"+gameManager.getDifficulty());
+                    break;
+
+                case "giveDifficulty":
+                    gameManager.setDifficulty(Integer.valueOf(result[1]));
+                    gameManager.setWait(false);
                     break;
                 default:
                     Log.d("checkMessage", result[0]);
@@ -262,7 +277,6 @@ public class TCPManager {
             try {
                 readSocket = new DataInputStream(socket.getInputStream());
                 while (true) {
-                    gameManager.setWait(true);
                     byte[] b = new byte[100];
                     int ac = readSocket.read(b, 0, b.length);
                     String input = new String(b, 0, b.length);
@@ -270,7 +284,6 @@ public class TCPManager {
                     setCheckMessage(new CheckMessage());
                     checkMessage.start();
                     checkMessage.join();
-                    gameManager.setWait(false);
                     if (ac == -1) {
                         break;
                     }

@@ -26,7 +26,7 @@ public class GameManager {
 
     public static GameManager getInstance(){
         if(instance == null){
-            instance  = new GameManager(0);
+            instance  = new GameManager();
         }
         return instance;
     }
@@ -84,8 +84,8 @@ public class GameManager {
         }
     }
 
-    public GameManager(int difficulty){
-        this.difficulty = difficulty;
+    private GameManager(){
+
     }
 
     public int getDifficulty() {

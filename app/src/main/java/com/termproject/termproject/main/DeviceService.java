@@ -32,6 +32,7 @@ public class DeviceService{
     protected static final int MY_TURN = 100;
     protected static final int THREAD_FLAGS_PRINT = 0;
 
+
     public void run(){
         while(!stop){
             switch(flag){

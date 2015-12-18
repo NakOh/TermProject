@@ -155,6 +155,7 @@ Java_com_termproject_termproject_main_DeviceService_IOCtlDisplay( JNIEnv* env, j
     }
     return TextLCDIoctl(TEXTLCD_DISPLAY_CONTROL,NULL);
 }
+
 jint
 Java_com_termproject_termproject_main_DeviceService_IOCtlCursor( JNIEnv* env, jobject thiz , jboolean bOn)
 {
@@ -257,6 +258,29 @@ Java_com_termproject_termproject_main_DeviceService_FLEDControl(JNIEnv* env, job
     close(fd);
     return ret;
 
+}
+
+jint
+Java_com_termproject_termproject_main_DeviceService_FLEDControl2(JNIEnv* env, jobject thiz, jint val1, jint val2, jint val3)
+{
+    int fd,ret;
+    char buf[3];
+    fd = open("/dev/fullcolorled",O_WRONLY);
+
+    ret = 5; //all led
+    if (fd < 0)
+    {
+        return -errno;
+    }
+    ioctl(5,ALL_LED);
+    buf[0] = val1;
+    buf[1] = val2;
+    buf[2] = val3;
+
+    write(fd,buf,3);
+
+    close(fd);
+    return ret;
 }
 
 jint

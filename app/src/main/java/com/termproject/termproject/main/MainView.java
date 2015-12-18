@@ -17,7 +17,6 @@ import com.termproject.termproject.R;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
-import com.termproject.termproject.main.DeviceService;
 
 /**
  * Created by kk070 on 2015-12-06.
@@ -40,18 +39,22 @@ public class MainView extends View {
     private TCPManager tcpManager;
     private Thread myThread;
     private int counter = 0;
+    private int difficulty = 0;
     private int queueCounter = 0;
     public int foundMine = 0;
     private Vibrator mVibrator;
-
-
     private Bitmap change;
     private Bitmap anti_change;
     private Bitmap time;
     private Bitmap anti_time;
     private Bitmap glass;
     private Bitmap onemore;
-
+    private int queueSearcher = -1;
+    private String firstLine, secondLine;
+    private int retTextLCD;
+    private int segData = 0;
+    private DeviceService deviceService;
+    protected static final int MY_TURN = 100;
 
     public MainView(Context context) {
         super(context);
@@ -64,11 +67,21 @@ public class MainView extends View {
         glass = BitmapFactory.decodeResource(context.getResources(), R.drawable.glass);
         onemore = BitmapFactory.decodeResource(context.getResources(), R.drawable.onemore);
 
-
         myThread = Thread.currentThread();
         gameManager = GameManager.getInstance();
         tcpManager = TCPManager.getInstance();
-        mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        gameManager.makeVibrator(context);
+        mVibrator = gameManager.getVibrator();
+        /*
+        deviceService = gameManager.getDeviceService();
+        deviceService.IOCtlClear();
+        deviceService.IOCtlReturnHome();
+        deviceService.IOCtlDisplay(true);
+        deviceService.IOCtlCursor(false);
+        deviceService.IOCtlBlink(false);
+        deviceService.SegmentIOControl(0);
+        */
+        this.difficulty = gameManager.getDifficulty();
         gameManager.setMyThread(myThread);
 
 
@@ -96,6 +109,21 @@ public class MainView extends View {
         }
 
         this.setFocusableInTouchMode(true);
+
+        if(!gameManager.isMulti()){
+            firstLine = "single Play";
+        } else if(gameManager.isMulti() && gameManager.isServer()){
+            firstLine = "I'm Server";
+        } else if(gameManager.isMulti() && !gameManager.isServer()){
+            firstLine = "I'm Client";
+        }
+
+       // secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
+       // retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
+      //  deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
+      //  segData = gameManager.getTotalMine() * 10000;
+     //   deviceService.SegmentControl(segData);
+
     }
 
 
@@ -181,7 +209,6 @@ public class MainView extends View {
                 tile[i][j] = new Tile(mContext);
             }
         }
-
         //서버에서 받아오기 위해 Tile을 넘김
         gameManager.setTile(tile);
     }
@@ -211,6 +238,8 @@ public class MainView extends View {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("end");
             }
+            //if(gameManager.getFindMine() > gameManager.getFindOtherMine()) deviceService.DotMatrixControl("WIN");
+          //  else deviceService.DotMatrixControl("LOSE");
             Log.d("GameView", "GameEnd");
             ((MainActivity) mContext).dialogSimple();
         }
@@ -296,6 +325,12 @@ public class MainView extends View {
     private void checkTouch(int index, float currentX, float currentY) {
         gameManager.setQueueCounter(0);
         gameManager.setQueueSearcher(-1);
+
+        for(int i = 1; i < 7; i++) {
+            // 아이템을 클릭했을 때 작동
+            //
+        }
+
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
                 if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -307,7 +342,6 @@ public class MainView extends View {
                     //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
                     //여기에 로직 추가하면 됩니다.
                     updateTouch(i, j, index);
-                    break;
                 }
             }
         }
@@ -320,13 +354,17 @@ public class MainView extends View {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("noTouch," + i + "," + j);
             }
-            mVibrator.vibrate(10);
             gameManager.setMyCombo(gameManager.getMyCombo() + 1);
+            mVibrator.vibrate(10 * gameManager.getMyCombo());
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("combo" + gameManager.getMyCombo());
             }
             gameManager.setFindMine(gameManager.getFindMine() + 1);
-            foundMine = gameManager.getFindMine();
+       //     segData = gameManager.getLeftMine() * 10000;
+      //      if(gameManager.getFindMine() > gameManager.getFindOtherMine()) segData += 100;
+       //     else segData += 200;
+        //    segData += gameManager.getFindMine();
+       //     deviceService.SegmentControl(segData);
         } else if (tile[i][j].getNumber() == 0) {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("touch," + i + "," + j);
@@ -349,7 +387,14 @@ public class MainView extends View {
             }
             gameManager.setMyTurn(false);
         }
+        //TextLCD 정보 업데이트
+    //    secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine()+gameManager.getFindOtherMine());
+    //    retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
+        //DotMatrix 정보 업데이트
+   //     deviceService.DotMatrixControl(""+ gameManager.getMyCombo());
     }
+
+
 
 
     private int randomRange(int n1, int n2) {

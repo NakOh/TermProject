@@ -11,7 +11,7 @@ import com.termproject.termproject.model.Tile;
 /**
  * Created by kk070 on 2015-12-06.
  */
-public class GameManager {
+public class GameManager extends DeviceService{
     private Item item;
     private static GameManager instance;
     private TCPManager tcpManager;
@@ -42,7 +42,7 @@ public class GameManager {
     private int timeAttackNumber;
 
     private Vibrator mVibrator;
-    private DeviceService deviceService;
+    //private DeviceService deviceService;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -77,7 +77,8 @@ public class GameManager {
             if(getFindMine() > getFindOtherMine()) segData += 100;
             else segData += 200;
             segData += getFindMine();
-            deviceService.SegmentControl(segData);
+            //deviceService.SegmentControl(segData);
+            SegmentControl(segData);
         } else if (tile[i][j].getNumber() == 0) {
             if(getQueueCounter() > 20){
                 setQueueCounter(0);
@@ -149,7 +150,7 @@ public class GameManager {
 
     private GameManager() {
         tcpManager = TCPManager.getInstance();
-        deviceService = new DeviceService();
+        //deviceService = new DeviceService();
     }
 
     /*
@@ -377,7 +378,7 @@ public class GameManager {
         return this.item;
     }
 
-    public DeviceService getDeviceService() {
-        return this.deviceService;
-    }
+    //public DeviceService getDeviceService() {
+        //return this.deviceService;
+    //}
 }

@@ -17,7 +17,7 @@ public class GameManager {
     private boolean server;
     private boolean myTurn ;
     private boolean first;
-    private boolean wait = true;
+    private boolean wait;
     private Thread myThread;
     private Tile[][] tile;
     private int[][] queueTile;

@@ -35,7 +35,6 @@ public class MainView extends View {
     private TCPManager tcpManager;
     private Thread myThread;
     private int counter = 0;
-    private int difficulty;
     private int queueCounter = 0;
     private int queueSearcher = -1;
 
@@ -43,11 +42,9 @@ public class MainView extends View {
     public int countDown = 0;
     public int flag = 100;
 
-    public int totalMine = 0;
     public int foundMine = 0;
 
     Vibrator mVibrator;
-    protected static final int MY_TURN = 100;
 
     public MainView(Context context) {
         super(context);
@@ -56,17 +53,11 @@ public class MainView extends View {
         gameManager = GameManager.getInstance();
         tcpManager = TCPManager.getInstance();
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        this.difficulty = gameManager.getDifficulty();
         gameManager.setMyThread(myThread);
 
         if (!gameManager.isServer() && gameManager.isMulti()) {
-            //클라면 서버의 난이도를 받아올겁니다.
-            tcpManager.sendMessage("wantDifficulty");
-            while(true){
-                if(!gameManager.isWait()){
-                    break;
-                }
-            }
+            //클라면 서버의 난이도를 받아온다.
+            sendMessage("wantDifficulty");
         }
 
         if (gameManager.getDifficulty() == 0) {
@@ -79,10 +70,6 @@ public class MainView extends View {
 
         //0 쉬움(5*5), 1 중간(7*7), 2 어려움(10*10)
         makeTile(gameManager.getIndex());
-
-        //서버에서 받아오기 위해 Tile을 넘김
-        gameManager.setTile(tile);
-
         if (gameManager.isServer() || !gameManager.isMulti()) {
             setMine(gameManager.getIndex());
             setNumber(gameManager.getIndex());
@@ -92,7 +79,6 @@ public class MainView extends View {
         }
 
         this.setFocusableInTouchMode(true);
-        totalMine = gameManager.getTotalMine();
     }
 
 
@@ -114,7 +100,7 @@ public class MainView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (gameManager.isMyTurn() && gameManager.isFirst() == false) {
+        if (gameManager.isMyTurn() && !gameManager.isFirst()) {
             float currentX = event.getX();
             float currentY = event.getY();
             switch (event.getAction()) {
@@ -151,6 +137,9 @@ public class MainView extends View {
                 tile[i][j] = new Tile(mContext);
             }
         }
+
+        //서버에서 받아오기 위해 Tile을 넘김
+        gameManager.setTile(tile);
     }
 
     private void setMine(int index) {
@@ -229,11 +218,7 @@ public class MainView extends View {
     private void setTileAgain(int index) {
         //클라이언트일 경우
         //서버로 맵 정보를 요구하자
-        tcpManager.sendMessage("wantMap");
-        while (true) {
-            if (!gameManager.isWait())
-                break;
-        }
+        sendMessage("wantMap");
         setNumber(index);
         setTileImage(index);
         setMineNumber(index);
@@ -286,7 +271,7 @@ public class MainView extends View {
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
             if (gameManager.isMulti()) {
-                tcpManager.sendMessage("Notouch," + i + "," + j);
+                tcpManager.sendMessage("noTouch," + i + "," + j);
             }
             mVibrator.vibrate(10);
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
@@ -300,9 +285,22 @@ public class MainView extends View {
             gameManager.getQueueTile()[queueCounter][2] = j;
             gameManager.checkSide(index);
             gameManager.setMyTurn(false);
+        } else {
+            if (gameManager.isMulti()) {
+                tcpManager.sendMessage("touch," + i + "," + j);
+            }
+            gameManager.setMyTurn(false);
         }
     }
 
+    private void sendMessage(String message) {
+        gameManager.setWait(true);
+        tcpManager.sendMessage(message);
+        while (true) {
+            if (!gameManager.isWait())
+                break;
+        }
+    }
 
     private int randomRange(int n1, int n2) {
         return (int) (Math.random() * (n2 - n1 + 1)) + n1;

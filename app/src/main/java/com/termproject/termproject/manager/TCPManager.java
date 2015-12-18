@@ -48,7 +48,6 @@ public class TCPManager {
 
     private String map = "";
 
-    private boolean checkConnect = false;
 
 
     public static TCPManager getInstance() {
@@ -143,13 +142,6 @@ public class TCPManager {
         }
     }
 
-    public boolean isCheckConnect() {
-        return checkConnect;
-    }
-
-    public void setCheckConnect(boolean checkConnect) {
-        this.checkConnect = checkConnect;
-    }
 
     public Thread getConnect() {
         return connect;
@@ -208,12 +200,12 @@ public class TCPManager {
                     gameManager.setWait(false);
                     break;
                 case "touch":
-                    gameManager.setMyTurn(true);
                     for (int i = 1; i < result.length; i = i + 2) {
                         gameManager.checkUpdate(Integer.valueOf(result[i]), Integer.valueOf(result[i + 1]));
                     }
+                    gameManager.setMyTurn(true);
                     break;
-                case "Notouch":
+                case "noTouch":
                     for (int i = 1; i < result.length; i = i + 2) {
                         gameManager.checkUpdate(Integer.valueOf(result[i]), Integer.valueOf(result[i + 1]));
                     }
@@ -245,7 +237,6 @@ public class TCPManager {
                 socket.connect(new InetSocketAddress(serverIpAddress, port));
                 writeSocket = new DataOutputStream(socket.getOutputStream());
                 readSocket = new DataInputStream(socket.getInputStream());
-                setCheckConnect(true);
                 getmHandler().post(new Runnable() {
                     @Override
                     public void run() {

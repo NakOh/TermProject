@@ -232,8 +232,13 @@ public class MainView extends View {
                 if (randomRange(1, 4) == 1) {
                     tile[i][j].setIsMine(true);
                     gameManager.setTotalMine(gameManager.getTotalMine() + 1);
-                } else if (randomRange(1, 6) == 1) {
-                    tile[i][j].setIsItem(true);
+                } else if (randomRange(1, 6) == 1) { // 1/6의 확률로 아이템을 배치
+                    int randomNum = randomRange(1, 6); // 6종류의 아이템 중 랜덤하게 골라진 아이템이 이미 2개 이상 배치되었다면 패스
+                    if(gameManager.getItemMadeCounter(randomNum) < 2) {
+                        tile[i][j].setIndex(randomNum);
+                        gameManager.setItemMadeCounter(randomNum);
+                        tile[i][j].setIsItem(true);
+                    }
                 }
 
             }

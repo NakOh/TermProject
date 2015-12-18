@@ -44,6 +44,8 @@ public class GameManager {
     private boolean onceMoreActivated = false;
     private boolean timeAttackActivated = false;
 
+    private int[] itemMadeCounter = {0, 0, 0, 0, 0, 0, 0};
+
     private Vibrator mVibrator;
     private DeviceService deviceService;
 
@@ -65,6 +67,10 @@ public class GameManager {
         this.findMine = 0;
         this.findOtherMine = 0;
         this.totalMine = 0;
+
+        for(int i = 0; i < 7; i++){
+            itemMadeCounter[i] = 0;
+        }
     }
 
     public void attack() {
@@ -488,6 +494,14 @@ public class GameManager {
 
     public void setTimeAttackActivated(boolean isActivated) {
         timeAttackActivated = isActivated;
+    }
+
+    public int getItemMadeCounter(int index){
+        return this.itemMadeCounter[index];
+    }
+
+    public void setItemMadeCounter(int index) {
+        itemMadeCounter[index]++;
     }
 
     //public DeviceService getDeviceService() {

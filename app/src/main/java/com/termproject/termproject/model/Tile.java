@@ -6,6 +6,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
 import com.termproject.termproject.R;
+import com.termproject.termproject.item.DefenceScoreChangeItem;
+import com.termproject.termproject.item.DefenceTimeAttackItem;
+import com.termproject.termproject.item.OnceMoreItem;
+import com.termproject.termproject.item.PreviewItem;
+import com.termproject.termproject.item.ScoreChangeItem;
+import com.termproject.termproject.item.TimeAttackItem;
 
 /**
  * Created by kk070 on 2015-12-02.
@@ -22,6 +28,7 @@ public class Tile {
     private int y;
     private int w;
     private int h;
+    private int index;
     private int[] resource = {R.drawable.number0, R.drawable.number1, R.drawable.number2, R.drawable.number3, R.drawable.number4, R.drawable.number5, R.drawable.number6, R.drawable.number7, R.drawable.number8};
 
     public Tile(Context context) {
@@ -32,7 +39,26 @@ public class Tile {
         if (isMine) {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.mine);
         } else if (isItem) {
-            
+            setIndex(randomRange(1, 6));
+            if (getIndex() == 1) {
+                setItem(new DefenceScoreChangeItem());
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_change);
+            } else if (getIndex() == 2) {
+                setItem(new DefenceTimeAttackItem());
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_time);
+            } else if (getIndex() == 3) {
+                setItem(new OnceMoreItem());
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.onemore);
+            } else if (getIndex() == 4) {
+                setItem(new PreviewItem());
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.glass);
+            } else if (getIndex() == 5) {
+                setItem(new ScoreChangeItem());
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.change);
+            } else if (getIndex() == 6) {
+                setItem(new TimeAttackItem());
+                tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.time);
+            }
         } else {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), resource[number]);
         }
@@ -118,5 +144,25 @@ public class Tile {
 
     public void setIsItem(boolean isItem) {
         this.isItem = isItem;
+    }
+
+    private int randomRange(int n1, int n2) {
+        return (int) (Math.random() * (n2 - n1 + 1)) + n1;
+    }
+
+    public Items getItem() {
+        return item;
+    }
+
+    public void setItem(Items item) {
+        this.item = item;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

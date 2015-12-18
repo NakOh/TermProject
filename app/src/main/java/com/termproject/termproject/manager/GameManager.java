@@ -12,7 +12,6 @@ import com.termproject.termproject.model.Tile;
  * Created by kk070 on 2015-12-06.
  */
 public class GameManager {
-    private Item item;
     private static GameManager instance;
     private TCPManager tcpManager;
     private int difficulty;
@@ -373,9 +372,6 @@ public class GameManager {
         return totalMine - findMine - findOtherMine;
     }
 
-    public Item getItem(){
-        return this.item;
-    }
 
     public DeviceService getDeviceService() {
         return this.deviceService;

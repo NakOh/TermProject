@@ -14,6 +14,12 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.termproject.termproject.R;
+import com.termproject.termproject.item.DefenceScoreChangeItem;
+import com.termproject.termproject.item.DefenceTimeAttackItem;
+import com.termproject.termproject.item.OnceMoreItem;
+import com.termproject.termproject.item.PreviewItem;
+import com.termproject.termproject.item.ScoreChangeItem;
+import com.termproject.termproject.item.TimeAttackItem;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
@@ -326,11 +332,6 @@ public class MainView extends View {
         gameManager.setQueueCounter(0);
         gameManager.setQueueSearcher(-1);
 
-        for (int i = 1; i < 7; i++) {
-            // 아이템을 클릭했을 때 작동
-            //
-        }
-
         for (int i = 0; i < index; i++) {
             for (int j = 0; j < index; j++) {
                 if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
@@ -350,6 +351,7 @@ public class MainView extends View {
     private void updateTouch(int i, int j, int index) {
         //나 자신이 눌렀을 때 (즉 내가 마인을 찾은거)
         tile[i][j].setIsShow(true);
+
         if (tile[i][j].isMine()) {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("noTouch," + i + "," + j);
@@ -366,8 +368,28 @@ public class MainView extends View {
             //    segData += gameManager.getFindMine();
             //     deviceService.SegmentControl(segData);
         } else if (tile[i][j].isItem()) {
+            if (tile[i][j].getIndex() == 1) {
+                gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() +1);
+            } else if (tile[i][j].getIndex() == 2) {
+                gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() +1);
+            } else if (tile[i][j].getIndex() == 3) {
+                gameManager.setOnceMoreNumber(gameManager.getOnceMoreNumber() +1);
+            } else if (tile[i][j].getIndex()== 4) {
+                gameManager.setPreviewNumber(gameManager.getPreviewNumber()+1);
+            } else if (tile[i][j].getIndex() == 5) {
+                gameManager.setScoreChangeNumber(gameManager.getScoreChangeNumber()+1);
+            } else if (tile[i][j].getIndex() == 6) {
+                gameManager.setTimeAttackNumber(gameManager.getTimeAttackNumber()+1);
+            }
 
+            gameManager.setMyCombo(0);
 
+            if (gameManager.isMulti()) {
+                tcpManager.sendMessage("touch," + i + "," + j);
+            }
+
+            gameManager.setMyTurn(false);
+            
         } else if (tile[i][j].getNumber() == 0) {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("touch," + i + "," + j);

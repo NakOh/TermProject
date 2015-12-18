@@ -339,38 +339,45 @@ public class MainView extends View {
     private void checkTouch(int index, float currentX, float currentY) {
         gameManager.setQueueCounter(0);
         gameManager.setQueueSearcher(-1);
+        int changeLeft = 0;
+        int changeRight = 0+change.getWidth();
+        int anti_changeRight = changeRight + anti_change.getWidth();
+        int timeRight = anti_changeRight + time.getWidth();
+        int anti_timeRight = timeRight + anti_time.getWidth();
+        int glassRight = anti_timeRight + glass.getWidth();
+        int onemoreRight = glassRight + onemore.getWidth();
 
-        if (0 + change.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + change.getHeight() > currentY) {
+        if (changeRight > currentX && changeLeft < currentX && 3 * h / 4 < currentY && 3 * h / 4 + change.getHeight() > currentY) {
             if (gameManager.getScoreChangeNumber() > 0) {
                 gameManager.scoreChange();
                 gameManager.setScoreChangeNumber(gameManager.getScoreChangeNumber() - 1);
             }
-        } else if (0 + time.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + time.getHeight() > currentY) {
+        } else if (anti_changeRight > currentX && changeRight < currentX && 3 * h / 4 < currentY && 3 * h / 4 + anti_change.getHeight() > currentY) {
+            if(gameManager.getDefenseScoreNumber()>0) {
+                gameManager.defenseScore(); //눌러서 작동하는건 아니다;
+                gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber()-1);
+            }
+        } else if (timeRight > currentX && anti_changeRight < currentX && 3 * h / 4 < currentY && 3 * h / 4 + time.getHeight() > currentY) {
             if (gameManager.getTimeAttackNumber() > 0) {
                 gameManager.timeAttack();
                 gameManager.setTimeAttackNumber(gameManager.getTimeAttackNumber() - 1);
             }
-        } else if (0 + anti_time.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + anti_time.getHeight() > currentY) {
+        } else if (anti_timeRight > currentX && timeRight < currentX && 3 * h / 4 < currentY && 3 * h / 4 + anti_time.getHeight() > currentY) {
             if (gameManager.getDefenseTimeNumber() > 0) {
                 gameManager.defenseTime(); //눌러서 작동하는건 아니다;
                 gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() - 1);
             }
-        } else if (0 + glass.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + glass.getHeight() > currentY) {
+        } else if (glassRight > currentX && anti_timeRight < currentX && 3 * h / 4 < currentY && 3 * h / 4 + glass.getHeight() > currentY) {
             if (gameManager.getPreviewNumber() > 0) {
-                gameManager.preview();
+                //gameManager.preview();
                 gameManager.setPreviewActivated(true);
                 gameManager.setPreviewNumber(gameManager.getPreviewNumber() - 1);
             }
-        } else if (0 + onemore.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + onemore.getHeight() > currentY) {
+        } else if (onemoreRight > currentX && glassRight < currentX && 3 * h / 4 < currentY && 3 * h / 4 + onemore.getHeight() > currentY) {
             if (gameManager.getOnceMoreNumber() > 0) {
                 gameManager.onceMore();
                 gameManager.setOnceMoreActivated(true);
                 gameManager.setOnceMoreNumber(gameManager.getOnceMoreNumber() - 1);
-            }
-        } else if (0 + anti_change.getWidth() > currentX && 0 < currentX && 3 * h / 4 < currentY && 3 * h / 4 + anti_change.getHeight() > currentY) {
-            if(gameManager.getDefenseScoreNumber()>0) {
-                gameManager.defenseScore(); //눌러서 작동하는건 아니다;
-                gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber()-1);
             }
         } else {
             for (int i = 0; i < index; i++) {
@@ -383,7 +390,10 @@ public class MainView extends View {
                         //tile이 원래는 보이지 않기 때문에 보이도록 수정한다. 그리고 그것이 마인일 경우 마인 찾은 갯수를 증가!
                         //기존 지뢰찾기 처럼 0인 경우에는 주변의 타일이 전부 Show 되어야 한다.(하지 말자) (하지 말자 뭐냐)
                         //여기에 로직 추가하면 됩니다.
-                        if(!tile[i][j].getIsClicked()) {
+                        if(gameManager.getPreviewActivated()) {
+                            gameManager.preview(i, j);
+                            gameManager.setPreviewActivated(false);
+                        } else  if(!tile[i][j].getIsClicked()) {
                             updateTouch(i, j, index);
                         }
                     }

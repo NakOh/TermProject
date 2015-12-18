@@ -248,10 +248,22 @@ public class GameManager {
         //deviceService.getDefense();
     }
 
-    public void preview(){
+    public void preview(int i, int j){
        // item.preview(index, i, j);for (int i = 0; i < index; i++) {
         item.preview();
         //preview 사용 시 다음 클릭한 타일과 상하좌우 타일을 3초동안 보여줌
+        tile[i][j].setIsShow(true);
+        if(i + 1 < index - 1 && !tile[i+1][j].isShow()) tile[i+1][j].setIsShow(true);
+        if(j + 1 < index - 1 && !tile[i][j+1].isShow()) tile[i][j+1].setIsShow(true);
+        if(i - 1 > 0 && !tile[i-1][j].isShow()) tile[i-1][j].setIsShow(true);
+        if(j - 1 > 0 && !tile[i][j-1].isShow()) tile[i][j-1].setIsShow(true);
+        ////////////////////////////////////////////////////
+        //약간의 시간이 지난 후 다시 setIsShow(false) 적용//
+        ////////////////////////////////////////////////////
+        //if(i + 1 < index - 1 && tile[i+1][j].isShow()) tile[i+1][j].setIsShow(false);
+        //if(j + 1 < index - 1 && tile[i][j+1].isShow()) tile[i][j+1].setIsShow(false);
+        //if(i - 1 > 0 && tile[i-1][j].isShow()) tile[i-1][j].setIsShow(false);
+        //if(j - 1 > 0 && tile[i][j-1].isShow()) tile[i][j-1].setIsShow(false);
     }
     public void onceMore(){
         item.onceMore();
@@ -330,7 +342,7 @@ public class GameManager {
 
     public void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
-        if(!myTurn) tcpManager.sendMessage("turnEnd");
+        if(isMulti() && !myTurn) tcpManager.sendMessage("turnEnd");
     }
 
     public boolean isWait() {

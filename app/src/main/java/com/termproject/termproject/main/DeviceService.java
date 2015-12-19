@@ -108,8 +108,13 @@ public class DeviceService {
                     }
                 }else{
                     //내 턴이 끝나면 초기화!
-                    LedData = 0;
-                    LEDControl(LedData);
+                    if(i==0){
+
+                    }else {
+                        LedData &= ~(compare[i - 1]);
+                        LedData |= compare[0];
+                        LEDControl(LedData);
+                    }
                 }
             }
         }

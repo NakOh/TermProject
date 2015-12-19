@@ -432,6 +432,7 @@ public class GameManager {
 
     public void setOtherCombo(int otherCombo) {
         this.otherCombo = otherCombo;
+        mVibrator.vibrate(50 * getOtherCombo());
     }
 
     public int getDefenseScoreNumber() {

@@ -1,6 +1,7 @@
 package com.termproject.termproject.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -15,6 +16,8 @@ import com.termproject.termproject.R;
 import com.termproject.termproject.manager.TCPManager;
 import com.termproject.termproject.manager.GameManager;
 import com.termproject.termproject.model.Tile;
+
+import java.text.DecimalFormat;
 
 /**
  * Created by kk070 on 2015-12-06.
@@ -71,7 +74,7 @@ public class MainView extends View {
         mVibrator = gameManager.getVibrator();
         gameManager.setMyThread(myThread);
 
-        /*
+
         deviceService = new DeviceService();
         deviceService.IOCtlClear();
         deviceService.IOCtlReturnHome();
@@ -79,7 +82,7 @@ public class MainView extends View {
         deviceService.IOCtlCursor(false);
         deviceService.IOCtlBlink(false);
         deviceService.SegmentIOControl(0);
-*/
+
 
         //시작할 때 데이터 초기화
         gameManager.resetScore();
@@ -110,7 +113,7 @@ public class MainView extends View {
 
         this.setFocusableInTouchMode(true);
 
-        /*
+
         if (!gameManager.isMulti()) {
             firstLine = "single Play";
         } else if (gameManager.isMulti() && gameManager.isServer()) {
@@ -124,7 +127,7 @@ public class MainView extends View {
         deviceService.DotMatrixControl("" + gameManager.getMyCombo());
         segData = gameManager.getTotalMine() * 10000;
         deviceService.SegmentControl(segData);
-        deviceService.LEDControl();*/
+        deviceService.LEDControl();
     }
 
 
@@ -145,6 +148,22 @@ public class MainView extends View {
         paint.setColor(Color.BLACK);
 
         paint.setTextSize(30);
+
+        //남은 지뢰
+        int mine = gameManager.getTotalMine() - (gameManager.getFindMine() + gameManager.getFindOtherMine());
+        //현재 순위
+        int rank;
+        if (gameManager.getFindMine() >= gameManager.getFindOtherMine()) {
+            rank = 1;
+        } else {
+            rank = 2;
+        }
+        //찾은 지뢰
+        int findmine = gameManager.getFindMine();
+        DecimalFormat twodigits = new DecimalFormat("00");
+        deviceService.SegmentIOControl(1);
+        deviceService.SegmentControl(Integer.valueOf(twodigits.format(mine) + twodigits.format(rank) + twodigits.format(findmine)));
+
 
         canvas.drawText(String.valueOf(gameManager.getScoreChangeNumber()), 0 + w / 12, h - 0, paint);
         canvas.drawText(String.valueOf(gameManager.getDefenseScoreNumber()), w / 6 + w / 12, h - 0, paint);
@@ -244,11 +263,9 @@ public class MainView extends View {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("end");
             }
-            /*
             if (gameManager.getFindMine() > gameManager.getFindOtherMine())
                 deviceService.DotMatrixControl("WIN");
             else deviceService.DotMatrixControl("LOSE");
-            */
             Log.d("GameView", "GameEnd");
             ((MainActivity) mContext).dialogSimple();
         }
@@ -408,22 +425,21 @@ public class MainView extends View {
                 tcpManager.sendMessage("noTouch," + i + "," + j);
             }
 
-            if(gameManager.isYesCombo()) {
+            if (gameManager.isYesCombo()) {
                 gameManager.setMyCombo(gameManager.getMyCombo() + 1);
-                mVibrator.vibrate(20 * gameManager.getMyCombo());
-            }else{
+            } else {
                 gameManager.setMyCombo(0);
             }
 
             if (gameManager.isMulti()) {
-                tcpManager.sendMessage("combo" + gameManager.getMyCombo());
+                tcpManager.sendMessage("combo," + gameManager.getMyCombo());
             }
             gameManager.setFindMine(gameManager.getFindMine() + 1);
             segData = gameManager.getLeftMine() * 10000;
-        /*    if (gameManager.getFindMine() > gameManager.getFindOtherMine()) segData += 100;
+            if (gameManager.getFindMine() > gameManager.getFindOtherMine()) segData += 100;
             else segData += 200;
             segData += gameManager.getFindMine();
-            deviceService.SegmentControl(segData);*/
+            deviceService.SegmentControl(segData);
         } else if (tile[i][j].isItem()) {
             if (tile[i][j].getIndex() == 1) {
                 gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() + 1);
@@ -473,13 +489,13 @@ public class MainView extends View {
                 gameManager.setMyTurn(false);
             }
         }
-        /*
+
         //TextLCD 정보 업데이트
         secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine() + gameManager.getFindOtherMine());
         retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
         //DotMatrix 정보 업데이트
         deviceService.DotMatrixControl("" + gameManager.getMyCombo());
-        */
+
     }
 
 

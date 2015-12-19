@@ -120,6 +120,9 @@ public class MainView extends View {
             firstLine = "I'm Client";
         }
 
+        queueTile = new int[100][3];
+        gameManager.setQueueTile(queueTile);
+
         secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine() + gameManager.getFindOtherMine());
         retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
         deviceService.DotMatrixControl("" + gameManager.getMyCombo());
@@ -169,8 +172,7 @@ public class MainView extends View {
         canvas.drawText(String.valueOf(gameManager.getPreviewNumber()), (4 * w / 6) + w / 12, h - 0, paint);
         canvas.drawText(String.valueOf(gameManager.getOnceMoreNumber()), (5 * w / 6) + w / 12, h - 0, paint);
 
-        queueTile = new int[20][3];
-        gameManager.setQueueTile(queueTile);
+
         invalidate();
     }
 

@@ -2,6 +2,7 @@ package com.termproject.termproject.manager;
 
 import android.content.Context;
 import android.os.Vibrator;
+import android.text.format.Time;
 
 import com.termproject.termproject.main.DeviceService;
 import com.termproject.termproject.model.Item;
@@ -92,7 +93,6 @@ public class GameManager {
     public void checkUpdate(int i, int j) {
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
-            //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
             setOtherCombo(getOtherCombo() + 1);
             mVibrator.vibrate(20 * getOtherCombo());
             setFindOtherMine(getFindOtherMine() + 1);
@@ -257,10 +257,16 @@ public class GameManager {
         ////////////////////////////////////////////////////
         //약간의 시간이 지난 후 다시 setIsShow(false) 적용//
         ////////////////////////////////////////////////////
-        //if(i + 1 < index - 1 && tile[i+1][j].isShow()) tile[i+1][j].setIsShow(false);
-        //if(j + 1 < index - 1 && tile[i][j+1].isShow()) tile[i][j+1].setIsShow(false);
-        //if(i - 1 > 0 && tile[i-1][j].isShow()) tile[i-1][j].setIsShow(false);
-        //if(j - 1 > 0 && tile[i][j-1].isShow()) tile[i][j-1].setIsShow(false);
+        try {
+            this.wait(5000);
+        } catch (Exception e) {
+
+        }
+        tile[i][j].setIsShow(false);
+        if(i + 1 < index - 1 && tile[i+1][j].isShow()) tile[i+1][j].setIsShow(false);
+        if(j + 1 < index - 1 && tile[i][j+1].isShow()) tile[i][j+1].setIsShow(false);
+        if(i - 1 > 0 && tile[i-1][j].isShow()) tile[i-1][j].setIsShow(false);
+        if(j - 1 > 0 && tile[i][j-1].isShow()) tile[i][j-1].setIsShow(false);
     }
 
     public void onceMore() {

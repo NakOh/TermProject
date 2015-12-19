@@ -206,7 +206,11 @@ public class TCPManager {
                     break;
                 case "giveMap":
                     for (int i = 1; i < result.length; i = i + 2) {
-                        gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
+                        if(i+1 == result.length){
+
+                        }else {
+                            gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
+                        }
                     }
                     gameManager.setWait(false);
                     break;

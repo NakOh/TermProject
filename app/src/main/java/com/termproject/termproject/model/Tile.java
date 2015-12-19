@@ -33,7 +33,6 @@ public class Tile {
         if (isMine) {
             tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.mine);
         } else if (isItem) {
-
             if (getIndex() == 1) {
                 tileBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.anti_change);
             } else if (getIndex() == 2) {

@@ -74,15 +74,16 @@ public class MainView extends View {
         mVibrator = gameManager.getVibrator();
         gameManager.setMyThread(myThread);
 
-
+/*
         deviceService = new DeviceService();
+        gameManager.setDeviceService(deviceService);
         deviceService.IOCtlClear();
         deviceService.IOCtlReturnHome();
         deviceService.IOCtlDisplay(true);
         deviceService.IOCtlCursor(false);
         deviceService.IOCtlBlink(false);
         deviceService.SegmentIOControl(0);
-
+*/
 
         //시작할 때 데이터 초기화
         gameManager.resetScore();
@@ -113,7 +114,7 @@ public class MainView extends View {
 
         this.setFocusableInTouchMode(true);
 
-
+/*
         if (!gameManager.isMulti()) {
             firstLine = "single Play";
         } else if (gameManager.isMulti() && gameManager.isServer()) {
@@ -127,7 +128,7 @@ public class MainView extends View {
         deviceService.DotMatrixControl("" + gameManager.getMyCombo());
         segData = gameManager.getTotalMine() * 10000;
         deviceService.SegmentControl(segData);
-        deviceService.LEDControl();
+        deviceService.LEDControl();*/
     }
 
 
@@ -158,13 +159,14 @@ public class MainView extends View {
         } else {
             rank = 2;
         }
+        /*
         //찾은 지뢰
         int findmine = gameManager.getFindMine();
         DecimalFormat twodigits = new DecimalFormat("00");
         deviceService.SegmentIOControl(1);
         deviceService.SegmentControl(Integer.valueOf(twodigits.format(mine) + twodigits.format(rank) + twodigits.format(findmine)));
 
-
+*/
         canvas.drawText(String.valueOf(gameManager.getScoreChangeNumber()), 0 + w / 12, h - 0, paint);
         canvas.drawText(String.valueOf(gameManager.getDefenseScoreNumber()), w / 6 + w / 12, h - 0, paint);
         canvas.drawText(String.valueOf(gameManager.getTimeAttackNumber()), (2 * w / 6) + w / 12, h - 0, paint);
@@ -262,10 +264,10 @@ public class MainView extends View {
             gameManager.setEnd(true);
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("end");
-            }
+            }/*
             if (gameManager.getFindMine() > gameManager.getFindOtherMine())
                 deviceService.DotMatrixControl("WIN");
-            else deviceService.DotMatrixControl("LOSE");
+            else deviceService.DotMatrixControl("LOSE");*/
             Log.d("GameView", "GameEnd");
             ((MainActivity) mContext).dialogSimple();
         }
@@ -322,6 +324,7 @@ public class MainView extends View {
         //클라이언트일 경우
         //서버로 맵 정보를 요구하자
         gameManager.sendMessage("wantMap");
+        gameManager.sendMessage("wantItem");
         setNumber(index);
         setTileImage(index);
         setMineNumber(index);
@@ -434,12 +437,12 @@ public class MainView extends View {
             if (gameManager.isMulti()) {
                 tcpManager.sendMessage("combo," + gameManager.getMyCombo());
             }
-            gameManager.setFindMine(gameManager.getFindMine() + 1);
+            gameManager.setFindMine(gameManager.getFindMine() + 1);/*
             segData = gameManager.getLeftMine() * 10000;
             if (gameManager.getFindMine() > gameManager.getFindOtherMine()) segData += 100;
             else segData += 200;
             segData += gameManager.getFindMine();
-            deviceService.SegmentControl(segData);
+            deviceService.SegmentControl(segData);*/
         } else if (tile[i][j].isItem()) {
             if (tile[i][j].getIndex() == 1) {
                 gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() + 1);
@@ -472,7 +475,7 @@ public class MainView extends View {
             gameManager.checkSide(index);
             gameManager.setMyCombo(0);
             if (gameManager.isMulti()) {
-                tcpManager.sendMessage("combo" + gameManager.getMyCombo());
+                tcpManager.sendMessage("combo," + gameManager.getMyCombo());
             }
             if (!gameManager.getOnceMoreActivated()) { // onceMore 쓰고있으면 그냥 진행
                 gameManager.setMyTurn(false);
@@ -483,18 +486,18 @@ public class MainView extends View {
             }
             gameManager.setMyCombo(0);
             if (gameManager.isMulti()) {
-                tcpManager.sendMessage("combo" + gameManager.getMyCombo());
+                tcpManager.sendMessage("combo," + gameManager.getMyCombo());
             }
             if (!gameManager.getOnceMoreActivated()) { // onceMore 쓰고있으면 그냥 진행
                 gameManager.setMyTurn(false);
             }
         }
-
+/*
         //TextLCD 정보 업데이트
         secondLine = gameManager.getDifficulty() + "/" + gameManager.getTotalMine() + "/" + (gameManager.getFindMine() + gameManager.getFindOtherMine());
         retTextLCD = deviceService.TextLCDOut(firstLine, secondLine);
         //DotMatrix 정보 업데이트
-        deviceService.DotMatrixControl("" + gameManager.getMyCombo());
+        deviceService.DotMatrixControl("" + gameManager.getMyCombo());*/
 
     }
 

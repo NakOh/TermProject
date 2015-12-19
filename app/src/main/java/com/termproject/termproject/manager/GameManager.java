@@ -23,7 +23,7 @@ public class GameManager {
     private boolean end = false;
     private boolean multi;
     private boolean server;
-    private boolean myTurn ;
+    private boolean myTurn;
     private boolean first;
     private boolean wait;
     private boolean yesCombo;
@@ -41,6 +41,7 @@ public class GameManager {
     private int scoreChangeNumber = 0;
     private int timeAttackNumber = 0;
 
+    private DeviceService deviceService;
     private boolean previewActivated = false;
     private boolean onceMoreActivated = false;
     private boolean timeAttackActivated = false;
@@ -49,15 +50,15 @@ public class GameManager {
 
     private Vibrator mVibrator;
 
-    public static GameManager getInstance(){
-        if(instance == null){
-            instance  = new GameManager();
+    public static GameManager getInstance() {
+        if (instance == null) {
+            instance = new GameManager();
         }
         return instance;
     }
 
 
-    public void resetScore(){
+    public void resetScore() {
         this.defenseScoreNumber = 0;
         this.defenseTimeNumber = 0;
         this.onceMoreNumber = 0;
@@ -69,7 +70,7 @@ public class GameManager {
         this.findOtherMine = 0;
         this.totalMine = 0;
 
-        for(int i = 0; i < 7; i++){
+        for (int i = 0; i < 7; i++) {
             itemMadeCounter[i] = 0;
         }
     }
@@ -84,31 +85,31 @@ public class GameManager {
         this.mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
-    public Vibrator getVibrator(){
+    public Vibrator getVibrator() {
         return this.mVibrator;
     }
 
-    public void checkUpdate(int i, int j){
+    public void checkUpdate(int i, int j) {
         tile[i][j].setIsShow(true);
         if (tile[i][j].isMine()) {
             //   mVibrator.vibrate(10); // 몇 콤보인지 확인하여 그에 따라 진동이 세지게 설정해야함
             setOtherCombo(getOtherCombo() + 1);
             mVibrator.vibrate(20 * getOtherCombo());
-           setFindOtherMine(getFindOtherMine() + 1);
-
+            setFindOtherMine(getFindOtherMine() + 1);
+            /*
             int segData = getLeftMine() * 10000;
-            if(getFindMine() > getFindOtherMine()) segData += 100;
+            if (getFindMine() > getFindOtherMine()) segData += 100;
             else segData += 200;
             segData += getFindMine();
-            //deviceService.SegmentControl(segData);
-            //SegmentControl(segData);
+            getDeviceService().SegmentControl(segData);
+            */
         } else if (tile[i][j].getNumber() == 0) {
-            if(getQueueCounter() > 20){
+            if (getQueueCounter() > 20) {
                 setQueueCounter(0);
                 setQueueSearcher(-1);
             } else {
                 setQueueSearcher(getQueueCounter());
-                setQueueCounter(getQueueCounter()+1);
+                setQueueCounter(getQueueCounter() + 1);
             }
             getQueueTile()[getQueueCounter()][1] = i;
             getQueueTile()[getQueueCounter()][2] = j;
@@ -120,7 +121,7 @@ public class GameManager {
         int i, j;
         while (getQueueCounter() != getQueueSearcher()) {
             setQueueSearcher(getQueueSearcher() + 1);
-            if(getQueueSearcher() > 20) setQueueSearcher(0);
+            if (getQueueSearcher() > 20) setQueueSearcher(0);
             i = getQueueTile()[getQueueSearcher()][1];
             j = getQueueTile()[getQueueSearcher()][2];
             if (i + 1 < index - 1 && !(tile[i + 1][j].isShow()) && !(tile[i + 1][j].isMine())) {
@@ -128,10 +129,10 @@ public class GameManager {
                 tile[i + 1][j].setIsClicked();
                 if (tile[i + 1][j].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
-                    if(getQueueCounter() > 20) setQueueCounter(0);
+                    if (getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i + 1;
                     getQueueTile()[getQueueCounter()][2] = j;
-                } else if(tile[i + 1][j].isItem()) {
+                } else if (tile[i + 1][j].isItem()) {
                     if (tile[i + 1][j].getIndex() == 1) {
                         setDefenseScoreNumber(getDefenseScoreNumber() + 1);
                     } else if (tile[i + 1][j].getIndex() == 2) {
@@ -152,10 +153,10 @@ public class GameManager {
                 tile[i][j + 1].setIsClicked();
                 if (tile[i][j + 1].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
-                    if(getQueueCounter() > 20) setQueueCounter(0);
+                    if (getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i;
                     getQueueTile()[getQueueCounter()][2] = j + 1;
-                } else if(tile[i][j + 1].isItem()) {
+                } else if (tile[i][j + 1].isItem()) {
                     if (tile[i][j + 1].getIndex() == 1) {
                         setDefenseScoreNumber(getDefenseScoreNumber() + 1);
                     } else if (tile[i][j + 1].getIndex() == 2) {
@@ -176,10 +177,10 @@ public class GameManager {
                 tile[i - 1][j].setIsClicked();
                 if (tile[i - 1][j].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
-                    if(getQueueCounter() > 20) setQueueCounter(0);
+                    if (getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i - 1;
                     getQueueTile()[getQueueCounter()][2] = j;
-                } else if(tile[i - 1][j].isItem()) {
+                } else if (tile[i - 1][j].isItem()) {
                     if (tile[i - 1][j].getIndex() == 1) {
                         setDefenseScoreNumber(getDefenseScoreNumber() + 1);
                     } else if (tile[i - 1][j].getIndex() == 2) {
@@ -200,10 +201,10 @@ public class GameManager {
                 tile[i][j - 1].setIsClicked();
                 if (tile[i][j - 1].getNumber() == 0) {
                     setQueueCounter(getQueueCounter() + 1);
-                    if(getQueueCounter() > 20) setQueueCounter(0);
+                    if (getQueueCounter() > 20) setQueueCounter(0);
                     getQueueTile()[getQueueCounter()][1] = i;
                     getQueueTile()[getQueueCounter()][2] = j - 1;
-                } else if(tile[i][j - 1].isItem()) {
+                } else if (tile[i][j - 1].isItem()) {
                     if (tile[i][j - 1].getIndex() == 1) {
                         setDefenseScoreNumber(getDefenseScoreNumber() + 1);
                     } else if (tile[i][j - 1].getIndex() == 2) {
@@ -235,30 +236,31 @@ public class GameManager {
         item = new Item();
     }
 
-    public void makeTCPManager(){
+    public void makeTCPManager() {
         tcpManager = TCPManager.getInstance();
     }
-    public void defenseTime(){
+
+    public void defenseTime() {
         item.defenceTimeAttack();
         tcpManager.sendMessage("defenceTimeAttack");
         //deviceService.getDefense();
     }
 
-    public void defenseScore(){
+    public void defenseScore() {
         item.defenceScoreChange();
         tcpManager.sendMessage("defenseScoreChange");
         //deviceService.getDefense();
     }
 
-    public void preview(int i, int j){
-       // item.preview(index, i, j);for (int i = 0; i < index; i++) {
+    public void preview(int i, int j) {
+        // item.preview(index, i, j);for (int i = 0; i < index; i++) {
         item.preview();
         //preview 사용 시 다음 클릭한 타일과 상하좌우 타일을 3초동안 보여줌
         tile[i][j].setIsShow(true);
-        if(i + 1 < index - 1 && !tile[i+1][j].isShow()) tile[i+1][j].setIsShow(true);
-        if(j + 1 < index - 1 && !tile[i][j+1].isShow()) tile[i][j+1].setIsShow(true);
-        if(i - 1 > 0 && !tile[i-1][j].isShow()) tile[i-1][j].setIsShow(true);
-        if(j - 1 > 0 && !tile[i][j-1].isShow()) tile[i][j-1].setIsShow(true);
+        if (i + 1 < index - 1 && !tile[i + 1][j].isShow()) tile[i + 1][j].setIsShow(true);
+        if (j + 1 < index - 1 && !tile[i][j + 1].isShow()) tile[i][j + 1].setIsShow(true);
+        if (i - 1 > 0 && !tile[i - 1][j].isShow()) tile[i - 1][j].setIsShow(true);
+        if (j - 1 > 0 && !tile[i][j - 1].isShow()) tile[i][j - 1].setIsShow(true);
         ////////////////////////////////////////////////////
         //약간의 시간이 지난 후 다시 setIsShow(false) 적용//
         ////////////////////////////////////////////////////
@@ -267,11 +269,13 @@ public class GameManager {
         //if(i - 1 > 0 && tile[i-1][j].isShow()) tile[i-1][j].setIsShow(false);
         //if(j - 1 > 0 && tile[i][j-1].isShow()) tile[i][j-1].setIsShow(false);
     }
-    public void onceMore(){
+
+    public void onceMore() {
         item.onceMore();
         // 게임 로직에 mine 이면 한 번 더 클릭, 아니면 상대방에게 넘기는 로직 추가
     }
-    public void scoreChange(){
+
+    public void scoreChange() {
         item.scoreChange();
         int tmp;
         tmp = getFindMine();
@@ -282,7 +286,7 @@ public class GameManager {
         // 만일 상대방이 defenseScoreChange()를 사용하면 무효화
     }
 
-    public void timeAttack(){
+    public void timeAttack() {
         item.timeAttack();
         tcpManager.sendMessage("timeAttack");
         // 상대방에게 timeAttack 아이템 공격 보내기
@@ -511,7 +515,7 @@ public class GameManager {
         timeAttackActivated = isActivated;
     }
 
-    public int getItemMadeCounter(int index){
+    public int getItemMadeCounter(int index) {
         return this.itemMadeCounter[index];
     }
 
@@ -527,7 +531,11 @@ public class GameManager {
         this.yesCombo = yesCombo;
     }
 
-    //public DeviceService getDeviceService() {
-        //return this.deviceService;
-    //}
+    public DeviceService getDeviceService() {
+        return deviceService;
+    }
+
+    public void setDeviceService(DeviceService deviceService) {
+        this.deviceService = deviceService;
+    }
 }

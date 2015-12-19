@@ -43,6 +43,7 @@ public class TCPManager {
     private Thread checkMessage;
 
     private String map = "";
+    private String item = "";
 
 
     public static TCPManager getInstance() {
@@ -102,6 +103,18 @@ public class TCPManager {
         }
     }
 
+    private void collectItem(int index){
+        for (int i = 0; i < index; i++) {
+            for (int j = 0; j < index; j++) {
+                if (i == 0 || j == 0 || i == index - 1 || j == index - 1) {
+                    continue;
+                }
+                if (gameManager.getTile()[i][j].isItem()) {
+                    item += String.valueOf(i) + "," + String.valueOf(j) + ","+gameManager.getTile()[i][j].getIndex()+",";
+                }
+            }
+        }
+    }
 
     private void collectMine(int index) {
         for (int i = 0; i < index; i++) {
@@ -187,10 +200,20 @@ public class TCPManager {
                     collectMine(gameManager.getIndex());
                     sendMessage("giveMap," + map);
                     break;
+                case "wantItem":
+                    collectItem(gameManager.getIndex());
+                    sendMessage("giveItem," + item);
+                    break;
                 case "giveMap":
-                    System.out.println(recvInput);
                     for (int i = 1; i < result.length; i = i + 2) {
                         gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsMine(true);
+                    }
+                    gameManager.setWait(false);
+                    break;
+                case "giveItem":
+                    for (int i = 1; i < result.length; i = i + 3) {
+                        gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIsItem(true);
+                        gameManager.getTile()[Integer.valueOf(result[i])][Integer.valueOf(result[i + 1])].setIndex(Integer.valueOf(result[i+2]));
                     }
                     gameManager.setWait(false);
                     break;

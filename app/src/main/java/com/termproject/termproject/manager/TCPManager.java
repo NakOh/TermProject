@@ -224,6 +224,7 @@ public class TCPManager {
                     gameManager.setMyTurn(true);
                     break;
                 case "scoreChange" :
+                    gameManager.getVibrator().vibrate(30);
                     if(gameManager.getDefenseScoreNumber()>0) {
                         sendMessage("defenseScoreChange");
                         gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() - 1);
@@ -237,9 +238,11 @@ public class TCPManager {
                     }
                     break;
                 case "defenseScoreChange" :
+                    gameManager.getVibrator().vibrate(30);
                     //gameManager.deviceService.getDefense();
                     break;
                 case "timeAttack" :
+                    gameManager.getVibrator().vibrate(30);
                     if(gameManager.getDefenseTimeNumber() > 0) {
                         sendMessage("defenseTimeAttack");
                         gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() - 1);
@@ -250,6 +253,7 @@ public class TCPManager {
                     }
                     break;
                 case "defenseTimeAttack" :
+                    gameManager.getVibrator().vibrate(30);
                     //gameManager.deviceService.getDefense();
                     break;
                 default:

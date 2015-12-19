@@ -40,6 +40,7 @@ public class MenuActivity extends Activity {
         super.onCreate(savedInstanceState);
         gameManager = GameManager.getInstance();
         TCPManager = TCPManager.getFirstInstance(this);
+        gameManager.makeTCPManager();
 
         setContentView(R.layout.main);
 

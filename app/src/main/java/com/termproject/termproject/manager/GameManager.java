@@ -26,6 +26,7 @@ public class GameManager {
     private boolean myTurn ;
     private boolean first;
     private boolean wait;
+    private boolean yesCombo;
     private Thread myThread;
     private Tile[][] tile;
     private int[][] queueTile;
@@ -47,7 +48,6 @@ public class GameManager {
     private int[] itemMadeCounter = {0, 0, 0, 0, 0, 0, 0};
 
     private Vibrator mVibrator;
-    private DeviceService deviceService;
 
     public static GameManager getInstance(){
         if(instance == null){
@@ -55,6 +55,7 @@ public class GameManager {
         }
         return instance;
     }
+
 
     public void resetScore(){
         this.defenseScoreNumber = 0;
@@ -225,17 +226,18 @@ public class GameManager {
         setWait(true);
         tcpManager.sendMessage(message);
         while (true) {
-            if (isWait())
+            if (!isWait())
                 break;
         }
     }
 
     private GameManager() {
-        tcpManager = TCPManager.getInstance();
-        deviceService = new DeviceService();
         item = new Item();
     }
 
+    public void makeTCPManager(){
+        tcpManager = TCPManager.getInstance();
+    }
     public void defenseTime(){
         item.defenceTimeAttack();
         tcpManager.sendMessage("defenceTimeAttack");
@@ -342,7 +344,6 @@ public class GameManager {
 
     public void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
-        if(isMulti() && !myTurn) tcpManager.sendMessage("turnEnd");
     }
 
     public boolean isWait() {
@@ -515,6 +516,14 @@ public class GameManager {
 
     public void setItemMadeCounter(int index) {
         itemMadeCounter[index]++;
+    }
+
+    public boolean isYesCombo() {
+        return yesCombo;
+    }
+
+    public void setYesCombo(boolean yesCombo) {
+        this.yesCombo = yesCombo;
     }
 
     //public DeviceService getDeviceService() {

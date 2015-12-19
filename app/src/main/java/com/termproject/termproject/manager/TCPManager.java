@@ -45,7 +45,6 @@ public class TCPManager {
     private String map = "";
 
 
-
     public static TCPManager getInstance() {
         return instance;
     }
@@ -199,7 +198,7 @@ public class TCPManager {
                     for (int i = 1; i < result.length; i = i + 2) {
                         gameManager.checkUpdate(Integer.valueOf(result[i]), Integer.valueOf(result[i + 1]));
                     }
-                    //gameManager.setMyTurn(true);
+                    gameManager.setMyTurn(true);
                     break;
                 case "noTouch":
                     for (int i = 1; i < result.length; i = i + 2) {
@@ -210,22 +209,19 @@ public class TCPManager {
                     end();
                     break;
                 case "wantDifficulty":
-                    sendMessage("giveDifficulty,"+gameManager.getDifficulty());
+                    sendMessage("giveDifficulty," + gameManager.getDifficulty());
                     break;
                 case "giveDifficulty":
                     gameManager.setDifficulty(Integer.valueOf(result[1]));
                     gameManager.setWait(false);
                     break;
-                case "combo" :
+                case "combo":
                     gameManager.setOtherCombo(Integer.valueOf(result[1]));
                     gameManager.attack();
                     break;
-                case "turnEnd" :
-                    gameManager.setMyTurn(true);
-                    break;
-                case "scoreChange" :
+                case "scoreChange":
                     gameManager.getVibrator().vibrate(30);
-                    if(gameManager.getDefenseScoreNumber()>0) {
+                    if (gameManager.getDefenseScoreNumber() > 0) {
                         sendMessage("defenseScoreChange");
                         gameManager.setDefenseScoreNumber(gameManager.getDefenseScoreNumber() - 1);
                         //gameManager.deviceService.getDefense();
@@ -237,13 +233,13 @@ public class TCPManager {
                         //gameManager.deviceService.getAttack();
                     }
                     break;
-                case "defenseScoreChange" :
+                case "defenseScoreChange":
                     gameManager.getVibrator().vibrate(30);
                     //gameManager.deviceService.getDefense();
                     break;
-                case "timeAttack" :
+                case "timeAttack":
                     gameManager.getVibrator().vibrate(30);
-                    if(gameManager.getDefenseTimeNumber() > 0) {
+                    if (gameManager.getDefenseTimeNumber() > 0) {
                         sendMessage("defenseTimeAttack");
                         gameManager.setDefenseTimeNumber(gameManager.getDefenseTimeNumber() - 1);
                         //gameManager.deviceService.getDefense();
@@ -252,7 +248,7 @@ public class TCPManager {
                         //gameManager.deviceService.getAttack();
                     }
                     break;
-                case "defenseTimeAttack" :
+                case "defenseTimeAttack":
                     gameManager.getVibrator().vibrate(30);
                     //gameManager.deviceService.getDefense();
                     break;

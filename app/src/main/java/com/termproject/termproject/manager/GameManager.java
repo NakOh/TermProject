@@ -96,13 +96,6 @@ public class GameManager {
             setOtherCombo(getOtherCombo() + 1);
             mVibrator.vibrate(20 * getOtherCombo());
             setFindOtherMine(getFindOtherMine() + 1);
-            /*
-            int segData = getLeftMine() * 10000;
-            if (getFindMine() > getFindOtherMine()) segData += 100;
-            else segData += 200;
-            segData += getFindMine();
-            getDeviceService().SegmentControl(segData);
-            */
         } else if (tile[i][j].getNumber() == 0) {
             if (getQueueCounter() > 20) {
                 setQueueCounter(0);
@@ -243,13 +236,13 @@ public class GameManager {
     public void defenseTime() {
         item.defenceTimeAttack();
         tcpManager.sendMessage("defenceTimeAttack");
-        //deviceService.getDefense();
+        deviceService.getDefense();
     }
 
     public void defenseScore() {
         item.defenceScoreChange();
         tcpManager.sendMessage("defenseScoreChange");
-        //deviceService.getDefense();
+        deviceService.getDefense();
     }
 
     public void preview(int i, int j) {

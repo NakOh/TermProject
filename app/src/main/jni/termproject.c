@@ -272,7 +272,7 @@ Java_com_termproject_termproject_main_DeviceService_FLEDControl2(JNIEnv* env, jo
     {
         return -errno;
     }
-    ioctl(5,ALL_LED);
+    ioctl(fd,ALL_LED);
     buf[0] = val1;
     buf[1] = val2;
     buf[2] = val3;
